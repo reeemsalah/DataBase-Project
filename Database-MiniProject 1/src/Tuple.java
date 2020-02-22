@@ -12,26 +12,40 @@ public class Tuple implements Serializable, Comparable{
 		this.size=n;
 	}
 	
+	/**
+	 * 
+	 * @param columnValues creates a tuple with these column names and values
+	 */
 	public void createTuple(Hashtable<String,Comparable> columnValues)
 	{
 		this.attributes=columnValues;
 	}
-
+	/**
+	 * 
+	 * @return the attributes and values of the tuple
+	 */
 	public Hashtable<String, Comparable> getAttributes() {
 		return attributes;
 	}
 	
 	
-	//return the key value of an object
+	/**
+	 * 
+	 * @return the key value of this
+	 */
 	public Comparable getKeyValue()
 	{
 		return this.getAttributes().get(key);
 	}
 	
 	
-	//if the key of the object that the method is invoked on is greater than the key of Object o
-	//return a pos number, if it was less than the key of Object o return neg number
-	// otherwise means that it is equal return 0
+	/**
+	 * 
+	 * @param o the Object to be compared to this
+	 * @return 0 if their keys are equal
+	 *         pos if this.key is greater than o.key
+	 *         neg if this.key is smaller than o.key
+	 */
 	@Override
 	public int compareTo(Object o) {
 		// TODO Auto-generated method stub
@@ -43,13 +57,21 @@ public class Tuple implements Serializable, Comparable{
 	}
 	
 	
-	//takes the column name and changes its content
+	/**
+	 * 
+	 * @param columnName name of the column to be edited
+	 * @param newValue the new value to be inserted in the column
+	 */
 	public void edit(String columnName, Comparable newValue)
 	{
 		this.getAttributes().replace(columnName, newValue);
 	}
 	
-	//returns the value of some column
+	/**
+	 * 
+	 * @param columnName the name of the column that we want to get its data
+	 * @return the data in the column
+	 */
 	public Comparable getValueOfColumn(String columnName)
 	{
 		return this.getAttributes().get(columnName);
