@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Tuple {
+public class Tuple implements Serializable{
 	private int size;
 	private Object[] columnValues;
 	 
