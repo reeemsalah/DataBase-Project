@@ -3,7 +3,7 @@ import java.util.Hashtable;
 
 public class Tuple implements Serializable, Comparable{
 	private int size;
-	private String key;
+	private transient String  key;
 	@SuppressWarnings("rawtypes")
 	private Hashtable <String,Comparable>attributes;
 	 
@@ -29,6 +29,10 @@ public class Tuple implements Serializable, Comparable{
 	}
 	
 	
+	public String getKey() {
+		return key;
+	}
+
 	/**
 	 * 
 	 * @return the key value of this

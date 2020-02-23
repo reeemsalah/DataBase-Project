@@ -1,9 +1,16 @@
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Vector;
 
-public class Page {
+public class Page implements Serializable{
 	private int maxRows;
 	private int currentRows=0;
 	private Vector<Tuple> rows;
+	private transient String maxKey;
+	private transient String minKey;
 	 public Page (int maxRows)
 	 {
 		 this.maxRows=maxRows;
@@ -14,10 +21,126 @@ public class Page {
 	 */
 	 // TODO pass the row as an object from method insert into table
 	 //TODO check in the insert into table first if the page is already full
-	 public void insertRow(Tuple t)
+	 public void insertInto(Tuple t)
 	 {
+		 
 		 currentRows++;
-		 rows.add(t);
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 while(it.hasNext())
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 if(tmp.compareTo(t)<0)
+			 {
+				 this.rows.insertElementAt(t, i);
+			 }
+			 i++;
+		 }
+		 
+		 String filename = "file.ser"; 
+		 
+         
+	        // Serialization  
+	        try
+	        {    
+	            //Saving of object in a file 
+	            FileOutputStream file = new FileOutputStream(filename); 
+	            ObjectOutputStream out = new ObjectOutputStream(file); 
+	              
+	            // Method for serialization of object 
+	            out.writeObject(this); 
+	              
+	            out.close(); 
+	            file.close(); 
+	        }
+	        catch(Exception ex) 
+	        { 
+	            ex.printStackTrace();
+	        } 
+	 }
+	 /**
+	  * 
+	  * @param t the Tuple to be deleted from the page
+	  */
+	 
+	 public void deleteFrom (Tuple t)
+	 {
+		 currentRows--;
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 while(it.hasNext())
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 if(tmp.compareTo(t)==0)
+			 {
+				 this.rows.remove(i);
+			 }
+			 i++;
+		 }
+		 
+		 String filename = "file.ser"; 
+		 
+         
+	        // Serialization  
+	        try
+	        {    
+	            //Saving of object in a file 
+	            FileOutputStream file = new FileOutputStream(filename); 
+	            ObjectOutputStream out = new ObjectOutputStream(file); 
+	              
+	            // Method for serialization of object 
+	            out.writeObject(this); 
+	              
+	            out.close(); 
+	            file.close(); 
+	        }
+	        catch(Exception ex) 
+	        { 
+	            ex.printStackTrace();
+	        } 
+		 
+	 }
+	 /**
+	  * 
+	  * @param t the updated tuple 
+	  * @param strKey the key for the tuple
+	  */
+	 
+	 public void update(Tuple t, String strKey)
+	 {
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 while(it.hasNext())
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 if(tmp.getKey().equals(t.getKey()))
+				 
+			 {
+				 rows.set(i, t);
+			 }
+			 i++;
+		 }
+		 
+		 String filename = "file.ser"; 
+		 
+         
+	        // Serialization  
+	        try
+	        {    
+	            //Saving of object in a file 
+	            FileOutputStream file = new FileOutputStream(filename); 
+	            ObjectOutputStream out = new ObjectOutputStream(file); 
+	              
+	            // Method for serialization of object 
+	            out.writeObject(this); 
+	              
+	            out.close(); 
+	            file.close(); 
+	        }
+	        catch(Exception ex) 
+	        { 
+	            ex.printStackTrace();
+	        } 
 	 }
 	/**
 	 * 
@@ -29,15 +152,14 @@ public class Page {
 	}
 	/**
 	 * 
-	 * @param columnName the name of the column to search on
-	 * @param columnValue the name of the value to look for
-	 * @return true if we find a tuple on this page with this value, false otherwise
+	 * @param t the tuple to find in the page
+	 * @return true if it is found, false otherwise
 	 */
-	public boolean exists(String columnName, Comparable columnValue)
+	public boolean exists(Tuple t)
 	{
-		for(Tuple t:rows)
+		for(Tuple t1:rows)
 		{
-			if(t.getValueOfColumn(columnName).equals(columnValue))
+			if(t1.compareTo(t)==0)
 				return true;
 		}
 		return false;
