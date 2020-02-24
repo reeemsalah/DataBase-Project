@@ -2,6 +2,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -14,6 +15,7 @@ public class Page implements Serializable{
 	 public Page (int maxRows)
 	 {
 		 this.maxRows=maxRows;
+		 rows = new Vector<Tuple>();
 	 }
 	/**
 	 * 
@@ -25,6 +27,7 @@ public class Page implements Serializable{
 	 {
 		 
 		 currentRows++;
+		 if(this.rows.size()>0) {
 		 Iterator it=this.rows.iterator();
 		 int i=0;
 		 while(it.hasNext())
@@ -36,7 +39,9 @@ public class Page implements Serializable{
 			 }
 			 i++;
 		 }
-		 
+		 }else {
+		 this.rows.insertElementAt(t, 0);}
+
 		 String filename = "file.ser"; 
 		 
          
@@ -85,7 +90,7 @@ public class Page implements Serializable{
 	        try
 	        {    
 	            //Saving of object in a file 
-	            FileOutputStream file = new FileOutputStream(filename); 
+	            FileOutputStream file = new FileOutputStream(filename); //overwrites file?
 	            ObjectOutputStream out = new ObjectOutputStream(file); 
 	              
 	            // Method for serialization of object 
@@ -165,4 +170,13 @@ public class Page implements Serializable{
 		return false;
 	}
 
+	public String toString() {
+//		String res="";
+//		Iterator<Tuple> it =rows.iterator();
+//		while(it.hasNext()) {
+//		res+= (it.next()).toString();}
+//		return res;
+		return rows.toString();
+		}
 }
+ 

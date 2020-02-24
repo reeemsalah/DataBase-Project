@@ -2,23 +2,24 @@ import java.io.Serializable;
 import java.util.Hashtable;
 
 public class Tuple implements Serializable, Comparable{
-	private int size;
-	private transient String  key;
+	//private int size;
+	private transient Comparable  key;
 	@SuppressWarnings("rawtypes")
 	private Hashtable <String,Comparable>attributes;
 	 
-	public Tuple(int n)
-	{
-		this.size=n;
-	}
+//	public Tuple(int n)
+//	{
+//		this.size=n;
+//	}
 	
 	/**
 	 * 
 	 * @param columnValues creates a tuple with these column names and values
 	 */
-	public void createTuple(Hashtable<String,Comparable> columnValues)
+	public  Tuple(Hashtable<String,Comparable> columnValues)
 	{
 		this.attributes=columnValues;
+		this.key =attributes.keys().nextElement();//temporary fix
 	}
 	/**
 	 * 
@@ -29,7 +30,7 @@ public class Tuple implements Serializable, Comparable{
 	}
 	
 	
-	public String getKey() {
+	public Comparable getKey() {
 		return key;
 	}
 
@@ -81,4 +82,9 @@ public class Tuple implements Serializable, Comparable{
 		return this.getAttributes().get(columnName);
 	}
 
+	
+	public String toString() {
+		
+		return (this.attributes).toString();
+	}
 }
