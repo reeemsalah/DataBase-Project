@@ -16,7 +16,7 @@ public class DBApp {
 	//	htblColNameValue.clear( );
 		Page p1 = new Page(10);
 		p1.insertInto(t);
-		
+		 
 		Hashtable htblColNameValue2 = new Hashtable( );
 		htblColNameValue2.put("id", new Integer( 2343432 ));
 		htblColNameValue2.put("name", "ali Noor"  );
