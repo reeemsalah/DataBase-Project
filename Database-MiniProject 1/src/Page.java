@@ -56,7 +56,9 @@ public class Page implements Serializable{
 			 i++;
 		 }
 		 if(!flag) {
-		 rows.add(t);}
+		 rows.add(t);
+		 maxKey=t.getKey();
+}
 		 }
 		 else {
 //		 this.rows.insertElementAt(t, 0);
