@@ -37,7 +37,7 @@ public class Page implements Serializable {
 	 * @param t the tuple to be inserted into the page
 	 */
 
-	 public void insertInto(Tuple t)
+	public void insertInto(Tuple t)
 	 {
 		  
 		 currentRows++;
@@ -51,7 +51,7 @@ public class Page implements Serializable {
 			 i++;
 			 if(tmp.compareTo(t)<0)
 			 {
-				 this.rows.insertElementAt(t, i);
+				 this.rows.insertElementAt(t, i+1);
 				 flag=true;
 //				 this.rows.add(t);
 
@@ -74,7 +74,6 @@ public class Page implements Serializable {
 			 maxKey=t.getKey();
 			 }
 	 }
-
 	 /**
 	  * 
 	  * @param t the Tuple to be deleted from the page
