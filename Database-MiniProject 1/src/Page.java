@@ -79,43 +79,39 @@ public class Page implements Serializable {
 	  * @param t the Tuple to be deleted from the page
 	  */
 	
-	 public void deleteFrom (Tuple t)
-	 {
-		 currentRows--;
-		 Iterator it=this.rows.iterator();
-		 int i=0;
-		 while(it.hasNext())
-		 {
-			 Tuple tmp=(Tuple)it.next();
-			 if(tmp.compareTo(t)==0)
-			 {
-				 this.rows.remove(i);
-			 }
-			 i++;
-		 }
-		 
-		 String filename = "file.ser"; 
-		 
-         
-	        // Serialization  
-	        try
-	        {    
-	            //Saving of object in a file 
-	            FileOutputStream file = new FileOutputStream(filename); //overwrites file?
-	            ObjectOutputStream out = new ObjectOutputStream(file); 
-	              
-	            // Method for serialization of object 
-	            out.writeObject(this); 
-	              
-	            out.close(); 
-	            file.close(); 
-	        }
-	        catch(Exception ex) 
-	        { 
-	            ex.printStackTrace();
-	        } 
-		 
-	 }
+	public void deleteFrom(Tuple t) {
+		currentRows--;
+		Iterator it = this.rows.iterator();
+		
+		for(Tuple t1:this.rows)
+		{
+			if(t1.compareTo(t)==0) {
+				this.rows.remove(t1);
+				
+			}
+			
+		}
+		this.updateMaxKey();
+		this.updateMinKey();
+
+		String filename = this.fileName;
+
+		// Serialization
+		try {
+			// Saving of object in a file
+			FileOutputStream file = new FileOutputStream(filename); // overwrites file?
+			ObjectOutputStream out = new ObjectOutputStream(file);
+
+			// Method for serialization of object
+			out.writeObject(this);
+
+			out.close();
+			file.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
 	 /**
 	  * 
 	  * @param t the updated tuple 
@@ -325,4 +321,13 @@ public class Page implements Serializable {
 		File file = new File(fileName);
 		file.delete();
 	}
+	private void updateMinKey()
+	{
+		minKey=rows.firstElement().getKeyValue();
+	}
+	private void updateMaxKey()
+	{
+		minKey=rows.lastElement().getKeyValue();	
+	}
+
 }
