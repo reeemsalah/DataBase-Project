@@ -10,8 +10,8 @@ public class Page implements Serializable{
 	private int maxRows;
 	private int currentRows=0;
 	private Vector<Tuple> rows;
-	private transient String maxKey;
-	private transient String minKey;
+	private  Comparable maxKey;
+	private  Comparable minKey;
 	 public Page (int maxRows)
 	 {
 		 this.maxRows=maxRows;
@@ -180,5 +180,14 @@ public class Page implements Serializable{
 //		return res;
 		return rows.toString();
 		}
+	/**
+	 * 
+	 * @param keyValue the key value of the tuple to be insetred
+	 * @return
+	 */
+	public boolean canBeInserted (Comparable keyValue)
+	{
+		return (keyValue.compareTo(minKey)>=0)&&(keyValue.compareTo(maxKey)>=0)&& !this.isFull();
+	}
 }
  

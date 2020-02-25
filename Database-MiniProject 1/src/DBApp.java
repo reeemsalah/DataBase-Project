@@ -10,11 +10,13 @@ import java.util.*;
 
 public class DBApp {
 	private static ArrayList<String> tableNames;
+	private static ArrayList<String> tableKeys;
 
 	public void init() {}
 	
 	public void createTable(String strTableName, String strClusteringKeyColumn,
 			Hashtable<String, String> htblColNameType) throws DBAppException {
+		
 		if(tableNames.contains(strTableName))
 		{
 			throw new DBAppException("Table Name Already exists");
@@ -23,6 +25,8 @@ public class DBApp {
 		else
 		{
 			tableNames.add(strTableName);
+			tableKeys.add(strClusteringKeyColumn);
+			
 		
 			
 		}
@@ -37,10 +41,10 @@ public class DBApp {
 		htblColNameValue.put("gpa", new Double( 0.98 ) );
 	//	dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		Tuple t= new Tuple(htblColNameValue);
+	//	Tuple t= new Tuple(htblColNameValue);
 	//	htblColNameValue.clear( );
 		Page p1 = new Page(10);
-		p1.insertInto(t);
+		//p1.insertInto(t);
 		 
 		Hashtable htblColNameValue2 = new Hashtable( );
 		htblColNameValue2.put("id", new Integer( 2343432 ));
@@ -50,12 +54,12 @@ public class DBApp {
 		//new line 
 		System.out.println("rien");
 		
-		Tuple t2= new Tuple(htblColNameValue2);
+		//Tuple t2= new Tuple(htblColNameValue2);
 	//	htblColNameValue2.clear( );
 		
 		
 //		Page p1 = new Page(10);
-		p1.insertInto(t2);
+		//p1.insertInto(t2);
 		
 		try
 		{
@@ -81,9 +85,9 @@ public class DBApp {
 		}
 		System.out.println("p1"+p1);
 
-		System.out.println("t2"+t2);
+		//System.out.println("t2"+t2);
 		
-	System.out.print(p1.exists(t2));
+	//System.out.print(p1.exists(t2));
 //=======
 	}
 }
