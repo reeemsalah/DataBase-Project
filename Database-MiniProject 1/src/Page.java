@@ -18,6 +18,14 @@ public class Page implements Serializable {
 
 	public Page(int maxRows, String fileName) {
 		this.maxRows = maxRows;
+		File file=new File(fileName);
+		try {
+		file.createNewFile();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		this.fileName = fileName;
 	}
 
