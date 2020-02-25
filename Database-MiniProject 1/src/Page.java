@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -12,9 +13,11 @@ public class Page implements Serializable{
 	private Vector<Tuple> rows;
 	private  Comparable maxKey;
 	private  Comparable minKey;
-	 public Page (int maxRows)
+	private String fileName;
+	 public Page (int maxRows,String fileName)
 	 {
 		 this.maxRows=maxRows;
+		 this.fileName=fileName;
 		 rows = new Vector<Tuple>();
 	 }
 	/**
@@ -85,6 +88,18 @@ public class Page implements Serializable{
 			 i++;
 		 }
 		 
+		if(currentRows==0)
+		{
+			File file= new File(fileName);
+			
+			if(file.delete())
+				System.out.println("Page Deleted Successfully");
+			else
+				System.out.println("Couldn't delete page");
+		}
+		else
+		{
+		 
 		 String filename = "file.ser"; 
 		 
          
@@ -105,7 +120,7 @@ public class Page implements Serializable{
 	        { 
 	            ex.printStackTrace();
 	        } 
-		 
+		}
 	 }
 	 /**
 	  * 

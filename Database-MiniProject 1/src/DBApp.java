@@ -43,7 +43,7 @@ public class DBApp {
 		
 	//	Tuple t= new Tuple(htblColNameValue);
 	//	htblColNameValue.clear( );
-		Page p1 = new Page(10);
+		//Page p1 = new Page(10);
 		//p1.insertInto(t);
 		 
 		Hashtable htblColNameValue2 = new Hashtable( );
@@ -83,7 +83,7 @@ public class DBApp {
 		{
 		System.out.println(e);
 		}
-		System.out.println("p1"+p1);
+	//	System.out.println("p1"+p1);
 
 		//System.out.println("t2"+t2);
 		
