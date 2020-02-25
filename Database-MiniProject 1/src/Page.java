@@ -155,7 +155,11 @@ public class Page implements Serializable {
 	        } 
 	 }
 	 
-
+//<<<<<<< HEAD
+//
+//=======
+//
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
 	/**
 	 * 
 	 * @return true if the page is full, false otherwise
@@ -237,5 +241,9 @@ public class Page implements Serializable {
 	{
 		minKey=rows.lastElement().getKeyValue();	
 	}
-
+//
+//<<<<<<< HEAD
+//}
+//=======
 }
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
