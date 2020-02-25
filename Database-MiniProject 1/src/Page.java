@@ -15,8 +15,11 @@ public class Page implements Serializable {
 	private Comparable maxKey;
 	private Comparable minKey;
 	private String fileName;
-
+	private Vector<Tuple> rows;
+	
+	
 	public Page(int maxRows, String fileName) {
+		
 		this.maxRows = maxRows;
 		File file=new File(fileName);
 		try {
@@ -33,10 +36,157 @@ public class Page implements Serializable {
 	 * 
 	 * @param t the tuple to be inserted into the page
 	 */
-	// TODO pass the row as an object from method insert into table
-	// TODO check in the insert into table first if the page is already full
-	public void insertInto(Tuple t) {
+//<<<<<<< HEAD
+	 // TODO pass the row as an object from method insert into table
+	 //TODO check in the insert into table first if the page is already full
+	 public void insertInto(Tuple t)
+	 {
+		  
+		 currentRows++;
+		 if(this.rows.size()>0) {
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 boolean flag=false;
+		 while(it.hasNext()&&flag==true)
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 i++;
+			 if(tmp.compareTo(t)<0)
+			 {
+				 this.rows.insertElementAt(t, i);
+				 flag=true;
+//				 this.rows.add(t);
 
+				 if (t.getKey().compareTo(maxKey)>0){
+					 maxKey=t.getKey();
+				 }
+			 }
+			 i++;
+		 }
+		 if(!flag) {
+		 rows.add(t);
+		 maxKey=t.getKey();
+}
+		 }
+		 else {
+//		 this.rows.insertElementAt(t, 0);
+			 this.rows.add(t);
+
+		 	minKey=t.getKey();
+			 maxKey=t.getKey();}
+//=======
+//	// TODO pass the row as an object from method insert into table
+//	// TODO check in the insert into table first if the page is already full
+//	public void insertInto(Tuple t) {
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
+//
+//<<<<<<< HEAD
+//		 String filename = "file.ser"; 
+//		 
+//         
+//	        // Serialization  
+//	        try
+//	        {    
+//	            //Saving of object in a file 
+//	            FileOutputStream file = new FileOutputStream(filename, true); 
+//	            ObjectOutputStream out = new ObjectOutputStream(file); 
+//	              
+//	            // Method for serialization of object 
+//	            out.writeObject(this); 
+//	              
+//	            out.close(); 
+//	            file.close(); 
+//	        }
+//	        catch(Exception ex) 
+//	        { 
+//	            ex.printStackTrace();
+//	        } 
+//	 }
+	 /**
+	  * 
+	  * @param t the Tuple to be deleted from the page
+	  */
+	 
+	 public void deleteFrom(Tuple t)
+	 {
+		 currentRows--;
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 while(it.hasNext())
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 if(tmp.compareTo(t)==0)
+			 {
+				 this.rows.remove(i);
+			 }
+			 i++;
+		 }
+		 
+		 String filename = "file.ser"; 
+		 
+         
+	        // Serialization  
+	        try
+	        {    
+	            //Saving of object in a file 
+	            FileOutputStream file = new FileOutputStream(filename); //overwrites file?
+	            ObjectOutputStream out = new ObjectOutputStream(file); 
+	              
+	            // Method for serialization of object 
+	            out.writeObject(this); 
+	              
+	            out.close(); 
+	            file.close(); 
+	        }
+	        catch(Exception ex) 
+	        { 
+	            ex.printStackTrace();
+	        } 
+		 
+	 }
+	 /**
+	  * 
+	  * @param t the updated tuple 
+	  * @param strKey the key for the tuple
+	  */
+	 
+	 public void update(Tuple t, String strKey)
+	 {
+		 Iterator it=this.rows.iterator();
+		 int i=0;
+		 while(it.hasNext())
+		 {
+			 Tuple tmp=(Tuple)it.next();
+			 if(tmp.getKey().equals(t.getKey()))
+				 
+			 {
+				 rows.set(i, t);
+			 }
+			 i++;
+		 }
+		 
+		 String filename = "file.ser"; 
+		 
+         
+	        // Serialization  
+	        try
+	        {    
+	            //Saving of object in a file 
+	            FileOutputStream file = new FileOutputStream(filename); 
+	            ObjectOutputStream out = new ObjectOutputStream(file); 
+	              
+	            // Method for serialization of object 
+	            out.writeObject(this); 
+	              
+	            out.close(); 
+	            file.close(); 
+	        }
+	        catch(Exception ex) 
+	        { 
+	            ex.printStackTrace();
+	        } 
+	 }
+//=======
 		currentRows++;
 
 		String filename = this.fileName;
@@ -171,6 +321,7 @@ public class Page implements Serializable {
 		}
 	}
 
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
 	/**
 	 * 
 	 * @return true if the page is full, false otherwise
