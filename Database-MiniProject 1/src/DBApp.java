@@ -1,10 +1,34 @@
+//<<<<<<< HEAD
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
 
 public class DBApp {
+	private static ArrayList<String> tableNames;
+
+	public void init() {}
+	
+	public void createTable(String strTableName, String strClusteringKeyColumn,
+			Hashtable<String, String> htblColNameType) throws DBAppException {
+		if(tableNames.contains(strTableName))
+		{
+			throw new DBAppException("Table Name Already exists");
+			
+		}
+		else
+		{
+			tableNames.add(strTableName);
+			
+		}
+
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
+	}
+
 	public static void main(String [] args) {
 		Hashtable htblColNameValue = new Hashtable( );
 		htblColNameValue.put("id", new Integer( 2343432 ));
@@ -59,5 +83,6 @@ public class DBApp {
 		System.out.println("t2"+t2);
 		
 	System.out.print(p1.exists(t2));
+//=======
 	}
 }
