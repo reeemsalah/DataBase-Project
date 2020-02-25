@@ -7,12 +7,14 @@ import java.util.Iterator;
 import java.util.Vector;
 
 public class Page implements Serializable{
+	
 	private int maxRows;
 	private int currentRows=0;
 	private Vector<Tuple> rows;
-	private transient String maxKey;
-	private transient String minKey;
-	 public Page (int maxRows)
+	private transient Comparable maxKey;
+	private transient Comparable minKey;
+	
+	public Page (int maxRows)
 	 {
 		 this.maxRows=maxRows;
 		 rows = new Vector<Tuple>();
@@ -25,9 +27,7 @@ public class Page implements Serializable{
 	 //TODO check in the insert into table first if the page is already full
 	 public void insertInto(Tuple t)
 	 {
-		 
-		 
-		 
+		  
 		 currentRows++;
 		 if(this.rows.size()>0) {
 		 Iterator it=this.rows.iterator();
@@ -38,11 +38,17 @@ public class Page implements Serializable{
 			 if(tmp.compareTo(t)<0)
 			 {
 				 this.rows.insertElementAt(t, i);
+				 if (t.getKey().compareTo(maxKey)>0){
+					 maxKey=t.getKey();
+				 }
 			 }
 			 i++;
 		 }
-		 }else {
-		 this.rows.insertElementAt(t, 0);}
+		 }
+		 else {
+		 this.rows.insertElementAt(t, 0);
+		
+			 maxKey=t.getKey();}
 
 		 String filename = "file.ser"; 
 		 
