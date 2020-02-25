@@ -11,10 +11,16 @@ public class Page implements Serializable{
 	private int maxRows;
 	private int currentRows=0;
 	private Vector<Tuple> rows;
+//<<<<<<< HEAD
 	private transient Comparable maxKey;
 	private transient Comparable minKey;
 	
 	public Page (int maxRows)
+//=======
+//	private  Comparable maxKey;
+//	private  Comparable minKey;
+//	 public Page (int maxRows)
+//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
 	 {
 		 this.maxRows=maxRows;
 		 rows = new Vector<Tuple>();
@@ -186,5 +192,14 @@ public class Page implements Serializable{
 //		return res;
 		return rows.toString();
 		}
+	/**
+	 * 
+	 * @param keyValue the key value of the tuple to be insetred
+	 * @return
+	 */
+	public boolean canBeInserted (Comparable keyValue)
+	{
+		return (keyValue.compareTo(minKey)>=0)&&(keyValue.compareTo(maxKey)>=0)&& !this.isFull();
+	}
 }
  

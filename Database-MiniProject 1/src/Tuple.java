@@ -1,43 +1,43 @@
 import java.io.Serializable;
 import java.util.Hashtable;
-
+  
+   @SuppressWarnings("serial")
+   
 public class Tuple implements Serializable, Comparable{
-	//private int size;
-	private transient Comparable  key;
+	
+	private  String  key;
 	@SuppressWarnings("rawtypes")
 	private Hashtable <String,Comparable>attributes;
 	 
-//	public Tuple(int n)
-//	{
-//		this.size=n;
-//	}
-	
 	/**
 	 * 
 	 * @param columnValues creates a tuple with these column names and values
 	 */
-	public  Tuple(Hashtable<String,Comparable> columnValues)
+	@SuppressWarnings("rawtypes")
+	public  Tuple(Hashtable<String,Comparable> columnValues, String key)
 	{
 		this.attributes=columnValues;
-		this.key =attributes.keys().nextElement();//temporary fix
+		this.key =key;
 	}
 	/**
 	 * 
 	 * @return the attributes and values of the tuple
 	 */
+	@SuppressWarnings("rawtypes")
 	public Hashtable<String, Comparable> getAttributes() {
 		return attributes;
 	}
 	
-	
+	@SuppressWarnings("rawtypes")
 	public Comparable getKey() {
-		return key;
+		return attributes.get(key);
 	}
 
 	/**
 	 * 
 	 * @return the key value of this
 	 */
+	@SuppressWarnings("rawtypes")
 	public Comparable getKeyValue()
 	{
 		return this.getAttributes().get(key);
@@ -55,7 +55,9 @@ public class Tuple implements Serializable, Comparable{
 	public int compareTo(Object o) {
 		// TODO Auto-generated method stub
 		Tuple o1=(Tuple)o;
+		@SuppressWarnings("rawtypes")
 		Comparable id2=o1.getKeyValue();
+		
 		Comparable id1=this.getKeyValue();
 		
 		return id1.compareTo(id2);
@@ -67,6 +69,7 @@ public class Tuple implements Serializable, Comparable{
 	 * @param columnName name of the column to be edited
 	 * @param newValue the new value to be inserted in the column
 	 */
+	@SuppressWarnings("rawtypes")
 	public void edit(String columnName, Comparable newValue)
 	{
 		
@@ -78,6 +81,7 @@ public class Tuple implements Serializable, Comparable{
 	 * @param columnName the name of the column that we want to get its data
 	 * @return the data in the column
 	 */
+	@SuppressWarnings("rawtypes")
 	public Comparable getValueOfColumn(String columnName)
 	{
 		return this.getAttributes().get(columnName);
