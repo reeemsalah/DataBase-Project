@@ -36,9 +36,7 @@ public class Page implements Serializable {
 	 * 
 	 * @param t the tuple to be inserted into the page
 	 */
-//<<<<<<< HEAD
-	 // TODO pass the row as an object from method insert into table
-	 //TODO check in the insert into table first if the page is already full
+
 	 public void insertInto(Tuple t)
 	 {
 		  
@@ -73,41 +71,16 @@ public class Page implements Serializable {
 			 this.rows.add(t);
 
 		 	minKey=t.getKey();
-			 maxKey=t.getKey();}
-//=======
-//	// TODO pass the row as an object from method insert into table
-//	// TODO check in the insert into table first if the page is already full
-//	public void insertInto(Tuple t) {
-//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
-//
-//<<<<<<< HEAD
-//		 String filename = "file.ser"; 
-//		 
-//         
-//	        // Serialization  
-//	        try
-//	        {    
-//	            //Saving of object in a file 
-//	            FileOutputStream file = new FileOutputStream(filename, true); 
-//	            ObjectOutputStream out = new ObjectOutputStream(file); 
-//	              
-//	            // Method for serialization of object 
-//	            out.writeObject(this); 
-//	              
-//	            out.close(); 
-//	            file.close(); 
-//	        }
-//	        catch(Exception ex) 
-//	        { 
-//	            ex.printStackTrace();
-//	        } 
-//	 }
+			 maxKey=t.getKey();
+			 }
+	 }
+
 	 /**
 	  * 
 	  * @param t the Tuple to be deleted from the page
 	  */
-	 
-	 public void deleteFrom(Tuple t)
+	
+	 public void deleteFrom (Tuple t)
 	 {
 		 currentRows--;
 		 Iterator it=this.rows.iterator();
@@ -150,7 +123,7 @@ public class Page implements Serializable {
 	  * @param strKey the key for the tuple
 	  */
 	 
-	 public void update(Tuple t, String strKey)
+	 public void update (Tuple t, String strKey)
 	 {
 		 Iterator it=this.rows.iterator();
 		 int i=0;
@@ -186,140 +159,98 @@ public class Page implements Serializable {
 	            ex.printStackTrace();
 	        } 
 	 }
+	 
 //=======
-		currentRows++;
-
-		String filename = this.fileName;
-
-		// Serialization
-		try { // Reading the object from a file
-			FileInputStream file1 = new FileInputStream(filename);
-			ObjectInputStream in = new ObjectInputStream(file1);
-
-			// Method for deserialization of object
-			Vector<Tuple> rows = (Vector<Tuple>) in.readObject();
-
-			in.close();
-			file1.close();
-			if (rows.size() > 0) {
-				Iterator it = rows.iterator();
-				int i = 0;
-				while (it.hasNext()) {
-					Tuple tmp = (Tuple) it.next();
-					if (tmp.compareTo(t) < 0) {
-						rows.insertElementAt(t, i);
-					}
-					i++;
-				}
-			} else {
-				rows.insertElementAt(t, 0);
-			}
-
-			// Saving of object in a file
-			FileOutputStream file2 = new FileOutputStream(filename);
-			ObjectOutputStream out = new ObjectOutputStream(file2);
-
-			// Method for serialization of object
-			out.writeObject(this);
-
-			out.close();
-			file2.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
+	/*
+	 * currentRows++;
+	 * 
+	 * String filename = this.fileName;
+	 * 
+	 * // Serialization try { // Reading the object from a file FileInputStream
+	 * file1 = new FileInputStream(filename); ObjectInputStream in = new
+	 * ObjectInputStream(file1);
+	 * 
+	 * // Method for deserialization of object Vector<Tuple> rows = (Vector<Tuple>)
+	 * in.readObject();
+	 * 
+	 * in.close(); file1.close(); if (rows.size() > 0) { Iterator it =
+	 * rows.iterator(); int i = 0; while (it.hasNext()) { Tuple tmp = (Tuple)
+	 * it.next(); if (tmp.compareTo(t) < 0) { rows.insertElementAt(t, i); } i++; } }
+	 * else { rows.insertElementAt(t, 0); }
+	 * 
+	 * // Saving of object in a file FileOutputStream file2 = new
+	 * FileOutputStream(filename); ObjectOutputStream out = new
+	 * ObjectOutputStream(file2);
+	 * 
+	 * // Method for serialization of object out.writeObject(this);
+	 * 
+	 * out.close(); file2.close(); } catch (Exception ex) { ex.printStackTrace(); }
+	 * }
+	 */
 	/**
 	 * 
 	 * @param t the Tuple to be deleted from the page
 	 */
 
-	public void deleteFrom(Tuple t) {
-		currentRows--;
-		if (this.isEmpty()) {
-			this.delete();
-		} else {
-			String filename = this.fileName;
-
-			// Serialization
-			try { // Reading the object from a file
-				FileInputStream file1 = new FileInputStream(filename);
-				ObjectInputStream in = new ObjectInputStream(file1);
-
-				// Method for deserialization of object
-				Vector<Tuple> rows = (Vector<Tuple>) in.readObject();
-
-				in.close();
-				file1.close();
-
-				Iterator it = rows.iterator();
-				int i = 0;
-				while (it.hasNext()) {
-					Tuple tmp = (Tuple) it.next();
-					if (tmp.compareTo(t) == 0) {
-						rows.remove(i);
-					}
-					i++;
-
-				}
-
-				// Saving of object in a file
-				FileOutputStream file2 = new FileOutputStream(filename);
-				ObjectOutputStream out = new ObjectOutputStream(file2);
-
-				// Method for serialization of object
-				out.writeObject(this);
-
-				out.close();
-				file2.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
+	/*
+	 * public void deleteFrom(Tuple t) { currentRows--; if (this.isEmpty()) {
+	 * this.delete(); } else { String filename = this.fileName;
+	 * 
+	 * // Serialization try { // Reading the object from a file FileInputStream
+	 * file1 = new FileInputStream(filename); ObjectInputStream in = new
+	 * ObjectInputStream(file1);
+	 * 
+	 * // Method for deserialization of object Vector<Tuple> rows = (Vector<Tuple>)
+	 * in.readObject();
+	 * 
+	 * in.close(); file1.close();
+	 * 
+	 * Iterator it = rows.iterator(); int i = 0; while (it.hasNext()) { Tuple tmp =
+	 * (Tuple) it.next(); if (tmp.compareTo(t) == 0) { rows.remove(i); } i++;
+	 * 
+	 * }
+	 * 
+	 * // Saving of object in a file FileOutputStream file2 = new
+	 * FileOutputStream(filename); ObjectOutputStream out = new
+	 * ObjectOutputStream(file2);
+	 * 
+	 * // Method for serialization of object out.writeObject(this);
+	 * 
+	 * out.close(); file2.close(); } catch (Exception ex) { ex.printStackTrace(); }
+	 * } }
+	 */
 	/**
 	 * 
 	 * @param t      the updated tuple
 	 * @param strKey the key for the tuple
 	 */
 
-	public void update(Tuple t, String strKey) {
-
-		try { // Reading the object from a file
-			FileInputStream file1 = new FileInputStream(fileName);
-			ObjectInputStream in = new ObjectInputStream(file1);
-
-			// Method for deserialization of object
-			Vector<Tuple> rows = (Vector<Tuple>) in.readObject();
-
-			in.close();
-			file1.close();
-
-			Iterator it = rows.iterator();
-			int i = 0;
-			while (it.hasNext()) {
-				Tuple tmp = (Tuple) it.next();
-				if (tmp.compareTo(t) == 0) {
-					rows.remove(i);
-				}
-				i++;
-
-			}
-
-			// Saving of object in a file
-			FileOutputStream file2 = new FileOutputStream(fileName);
-			ObjectOutputStream out = new ObjectOutputStream(file2);
-
-			// Method for serialization of object
-			out.writeObject(this);
-
-			out.close();
-			file2.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+	/*
+	 * public void update(Tuple t, String strKey) {
+	 * 
+	 * try { // Reading the object from a file FileInputStream file1 = new
+	 * FileInputStream(fileName); ObjectInputStream in = new
+	 * ObjectInputStream(file1);
+	 * 
+	 * // Method for deserialization of object Vector<Tuple> rows = (Vector<Tuple>)
+	 * in.readObject();
+	 * 
+	 * in.close(); file1.close();
+	 * 
+	 * Iterator it = rows.iterator(); int i = 0; while (it.hasNext()) { Tuple tmp =
+	 * (Tuple) it.next(); if (tmp.compareTo(t) == 0) { rows.remove(i); } i++;
+	 * 
+	 * }
+	 * 
+	 * // Saving of object in a file FileOutputStream file2 = new
+	 * FileOutputStream(fileName); ObjectOutputStream out = new
+	 * ObjectOutputStream(file2);
+	 * 
+	 * // Method for serialization of object out.writeObject(this);
+	 * 
+	 * out.close(); file2.close(); } catch (Exception ex) { ex.printStackTrace(); }
+	 * }
+	 */
 
 //>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
 	/**
