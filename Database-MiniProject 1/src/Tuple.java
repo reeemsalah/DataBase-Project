@@ -69,6 +69,7 @@ public class Tuple implements Serializable, Comparable{
 	 */
 	public void edit(String columnName, Comparable newValue)
 	{
+		
 		this.getAttributes().replace(columnName, newValue);
 	}
 	

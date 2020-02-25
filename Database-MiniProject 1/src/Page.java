@@ -26,6 +26,8 @@ public class Page implements Serializable{
 	 public void insertInto(Tuple t)
 	 {
 		 
+		 
+		 
 		 currentRows++;
 		 if(this.rows.size()>0) {
 		 Iterator it=this.rows.iterator();
