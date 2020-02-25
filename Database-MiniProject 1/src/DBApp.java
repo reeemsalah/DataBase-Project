@@ -43,7 +43,7 @@ public class DBApp {
 		
 		Tuple t= new Tuple(htblColNameValue, "id");
 	//	htblColNameValue.clear( );
-		Page p1 = new Page(10);
+
 		 
 		Hashtable htblColNameValue2 = new Hashtable( );
 		htblColNameValue2.put("id", new Integer( 2343430 ));
@@ -57,7 +57,7 @@ public class DBApp {
 	//	htblColNameValue2.clear( );
 		
 		
-//		Page p1 = new Page(10);
+	Page p1 = new Page(10, "page1");
 
 		
 		
@@ -101,8 +101,9 @@ public class DBApp {
 		catch (IOException e)
 		{
 		System.out.println(e);
-		}
 
+		}
+	//	System.out.println("p1"+p1);
 
 		System.out.println("p1 "+p1);
 
