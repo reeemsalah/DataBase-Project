@@ -21,7 +21,9 @@ public class DBApp {
 		htblColNameValue2.put("id", new Integer( 2343432 ));
 		htblColNameValue2.put("name", "ali Noor"  );
 		htblColNameValue2.put("gpa", new Double( 0.95 ) );
-	//	dbApp.insertIntoTable( strTableName , htblColNameValue );
+	//	dbApp.insertIntoTable( strTableName , htblColNameValue ); 
+		//new line 
+		System.out.println("rien");
 		
 		Tuple t2= new Tuple(htblColNameValue2);
 	//	htblColNameValue2.clear( );
