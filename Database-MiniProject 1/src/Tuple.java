@@ -5,7 +5,7 @@ import java.util.Hashtable;
    
 public class Tuple implements Serializable, Comparable{
 	
-	private  String  key;
+	private transient Comparable  key;
 	@SuppressWarnings("rawtypes")
 	private Hashtable <String,Comparable>attributes;
 	 
@@ -17,7 +17,7 @@ public class Tuple implements Serializable, Comparable{
 	public  Tuple(Hashtable<String,Comparable> columnValues, String key)
 	{
 		this.attributes=columnValues;
-		this.key =key;
+		this.key = (Comparable) attributes.get(key);
 	}
 	/**
 	 * 
@@ -30,7 +30,8 @@ public class Tuple implements Serializable, Comparable{
 	
 	@SuppressWarnings("rawtypes")
 	public Comparable getKey() {
-		return attributes.get(key);
+	//	return attributes.get(key);
+		return key;
 	}
 
 	/**
@@ -56,9 +57,14 @@ public class Tuple implements Serializable, Comparable{
 		// TODO Auto-generated method stub
 		Tuple o1=(Tuple)o;
 		@SuppressWarnings("rawtypes")
-		Comparable id2=o1.getKeyValue();
+//		Comparable id2=o1.getKeyValue();
+//		
+//		Comparable id1=this.getKeyValue();
+//		
 		
-		Comparable id1=this.getKeyValue();
+		Comparable id2=o1.key;
+		
+		Comparable id1=this.key;
 		
 		return id1.compareTo(id2);
 	}

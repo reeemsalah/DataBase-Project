@@ -38,22 +38,31 @@ public class Page implements Serializable{
 		 if(this.rows.size()>0) {
 		 Iterator it=this.rows.iterator();
 		 int i=0;
-		 while(it.hasNext())
+		 boolean flag=false;
+		 while(it.hasNext()&&flag==true)
 		 {
 			 Tuple tmp=(Tuple)it.next();
+			 i++;
 			 if(tmp.compareTo(t)<0)
 			 {
 				 this.rows.insertElementAt(t, i);
+				 flag=true;
+//				 this.rows.add(t);
+
 				 if (t.getKey().compareTo(maxKey)>0){
 					 maxKey=t.getKey();
 				 }
 			 }
 			 i++;
 		 }
+		 if(!flag) {
+		 rows.add(t);}
 		 }
 		 else {
-		 this.rows.insertElementAt(t, 0);
-		
+//		 this.rows.insertElementAt(t, 0);
+			 this.rows.add(t);
+
+		 	minKey=t.getKey();
 			 maxKey=t.getKey();}
 
 		 String filename = "file.ser"; 
@@ -63,7 +72,7 @@ public class Page implements Serializable{
 	        try
 	        {    
 	            //Saving of object in a file 
-	            FileOutputStream file = new FileOutputStream(filename); 
+	            FileOutputStream file = new FileOutputStream(filename, true); 
 	            ObjectOutputStream out = new ObjectOutputStream(file); 
 	              
 	            // Method for serialization of object 
