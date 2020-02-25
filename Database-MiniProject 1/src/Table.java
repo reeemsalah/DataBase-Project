@@ -12,7 +12,7 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	// private int numOfPages;
+	private int numOfPages;
 	// private Vector<Object> columnValues;
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
