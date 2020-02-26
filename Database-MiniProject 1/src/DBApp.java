@@ -47,7 +47,7 @@ public class DBApp {
 				clustered.add(false);
 			}
 
-			Table t = new Table(strTableName,columnNames,columnTypes,clustered,indexed,strClusteringKeyColumn);
+			//Table t = new Table(strTableName,columnNames,columnTypes,clustered,indexed,strClusteringKeyColumn);
 		}
 
 

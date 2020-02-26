@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.util.Vector;
 @SuppressWarnings("serial")
 public class Table implements Serializable {
 	// TODO values of the inserts needs to be added
+	private static int maxRows;
 	private String tableName;
 	private Vector<Page> tablePages;
 	private ArrayList<String> columnNames;
@@ -26,14 +28,28 @@ public class Table implements Serializable {
 	// private Vector<Object> columnValues;
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
-			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed,String clusteredKey) {
+			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed,String clusteredKey, int maxRows) {
 		this.tableName=tableName;
 		this.columnNames=columnNames;
 		this.columnTypes=columnTypes;
 		this.clusteredCoulmns=clustered;
 		this.indexedCoulmns=indexed;
 		this.clusteredKey = clusteredKey;
+		Table.maxRows=maxRows;
 	}
+	public  String addPage()
+	{
+		File file=new File(tableName+"_"+(++numOfPages)+".ser");
+		try {
+		file.createNewFile();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return tableName+"_"+(++numOfPages)+".ser";
+	}
+	
 	public void Write(String filename) {
 		// String filename = tableName + "_"+ numOfPages+".ser"; 
 		 
@@ -94,20 +110,23 @@ public class Table implements Serializable {
 	 * }
 	 */
 	public void insert(Tuple t) {
-		
-		Iterator<Page> iterator = tablePages.iterator();
-		if(tablePages.lastElement().isFull()) {
+		if(numOfPages==0)//Creating the first page
+		{
+			String file1=addPage();
+			pageInfo.put(file1, new Comparable[] {maxRows,t.getKeyValue()});
+		}
+		else
+		{
 			
 		}
-		int countPagesSoFar = 0;
-		while (iterator.hasNext()) {
-			if (iterator.next().isFull()) {
-				countPagesSoFar++;
-			} else {
-				Page p = tablePages.get(countPagesSoFar);
-				p.insertInto(t);
-			}
-		}
+		/*
+		 * Iterator<Page> iterator = tablePages.iterator();
+		 * if(tablePages.lastElement().isFull()) {
+		 * 
+		 * } int countPagesSoFar = 0; while (iterator.hasNext()) { if
+		 * (iterator.next().isFull()) { countPagesSoFar++; } else { Page p =
+		 * tablePages.get(countPagesSoFar); p.insertInto(t); } }
+		 */
 	}
 
 	public String returnTableName() {
