@@ -31,7 +31,7 @@ public class Tuple implements Serializable, Comparable{
 	@SuppressWarnings("rawtypes")
 	public String getKey() {
 	//	return attributes.get(key);
-		return key;
+		return (String) key;
 	}
 
 	/**

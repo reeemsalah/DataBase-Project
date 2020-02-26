@@ -42,29 +42,34 @@ public class Page implements Serializable {
 			Iterator it = this.rows.iterator();
 			int i = 0;
 			boolean flag = false;
-			while (it.hasNext() && flag) {
+			while (it.hasNext() && !flag) {
 				Tuple tmp = (Tuple) it.next();
 				i++;
-				if (tmp.compareTo(t) < 0) {
-					this.rows.insertElementAt(t, i + 1);
+				if (tmp.compareTo(t) > 0) {
+				//	System.out.println((tmp.compareTo(t) > 0) + " " + rows.size());
+					this.rows.insertElementAt(t, i-1);
+			//		System.out.println((tmp.compareTo(t) > 0) + " " + rows.size());
+
 					flag = true;
-					if (t.getKeyValue().compareTo(maxKey) > 0) {
-						maxKey = t.getKey();
-					}
+//					if (t.getKeyValue().compareTo(maxKey) < 0) {
+//						maxKey = t.getKeyValue();
+//					}
 				}
-				i++;
+//				i++;
 			}
 			if (!flag) {
 				rows.add(t);
-				maxKey = t.getKey();
+//				maxKey = t.getKeyValue();
 			}
 		} else {
 
 			this.rows.add(t);
 
-			minKey = t.getKey();
-			maxKey = t.getKey();
+//			minKey = t.getKeyValue();
+//			maxKey = t.getKeyValue();
 		}
+		updateMaxKey();
+		updateMinKey();
 	}
 
 	/**
@@ -74,17 +79,24 @@ public class Page implements Serializable {
 
 	public void deleteFrom(Tuple t) {
 		currentRows--;
+		boolean done_flag=false;
 		Iterator it = this.rows.iterator();
 
 		for (Tuple t1 : this.rows) {
 			if (t1.compareTo(t) == 0) {
 				this.rows.remove(t1);
-
+				break;
 			}
 
 		}
+		if (currentRows>0) {
 		this.updateMaxKey();
-		this.updateMinKey();
+		this.updateMinKey();}
+		else {
+			// TBD----------SHOULD BE HANDLED IIN TABLE???????
+			minKey=null;
+			maxKey=null;
+		}
 
 		String filename = this.fileName;
 
@@ -182,7 +194,7 @@ public class Page implements Serializable {
 	}
 
 	private void updateMaxKey() {
-		minKey = rows.lastElement().getKeyValue();
+		maxKey = rows.lastElement().getKeyValue();
 	}
 
 	@Override
