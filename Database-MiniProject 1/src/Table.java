@@ -12,17 +12,18 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	private int numOfPages;// don't decrement
-	// fast retrieval of clustered column
+	private String clusteredKey;
+	private int numOfPages;
 	// private Vector<Object> columnValues;
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
-			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed) {
+			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed,String clusteredKey) {
 		this.tableName=tableName;
 		this.columnNames=columnNames;
 		this.columnTypes=columnTypes;
 		this.clusteredCoulmns=clustered;
 		this.indexedCoulmns=indexed;
+		this.clusteredKey = clusteredKey;
 	}
 
 	/*
@@ -35,7 +36,11 @@ public class Table implements Serializable {
 	 * }
 	 */
 	public void insert(Tuple t) {
+		
 		Iterator<Page> iterator = tablePages.iterator();
+		if(tablePages.lastElement().isFull()) {
+			
+		}
 		int countPagesSoFar = 0;
 		while (iterator.hasNext()) {
 			if (iterator.next().isFull()) {
@@ -46,9 +51,13 @@ public class Table implements Serializable {
 			}
 		}
 	}
-	//changed  by ahmed
+
 	public String returnTableName() {
 		return this.tableName;
+	}
+	
+	public String returnClusteredKey() {
+		return this.clusteredKey;
 	}
 
 }
