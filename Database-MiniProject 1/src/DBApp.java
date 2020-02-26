@@ -9,29 +9,48 @@ import java.util.Hashtable;
 import java.util.*;
 
 public class DBApp {
-	private static ArrayList<String> tableNames;
-	private static ArrayList<String> tableKeys;
+	private static ArrayList<Table> tables;
+	private static ArrayList<String> tableKeys;// not needed at all
 
 	public void init() {}
 	
 	public void createTable(String strTableName, String strClusteringKeyColumn,
 			Hashtable<String, String> htblColNameType) throws DBAppException {
-		
-		if(tableNames.contains(strTableName))
-		{
-			throw new DBAppException("Table Name Already exists");
-			
+		boolean flag = false;
+		for(int i = 0;i<tables.size();i++) {
+			if(tables.get(i).returnTableName().equals(strTableName)) {
+				flag = true;
+				break;
+			}
 		}
-		else
-		{
-			tableNames.add(strTableName);
-			tableKeys.add(strClusteringKeyColumn);
-			
-		
-			
+		if(flag == true) {
+			throw new DBAppException("This table already exists");
+		}else {
+			ArrayList<String> columnNames = new ArrayList<String>();
+			ArrayList<String> columnTypes = new ArrayList<String>();
+			Set<String> names = htblColNameType.keySet();
+			for(String key:names) {
+				columnNames.add(key);
+				columnTypes.add(htblColNameType.get(key));
+			}
+			ArrayList<Boolean> clustered = new ArrayList<Boolean>();
+			for(int i = 0;i<columnNames.size();i++) {
+				if(columnNames.equals(strClusteringKeyColumn)) {
+					clustered.add(true);
+				}else {
+					clustered.add(false);
+				}
+			}
+			ArrayList<Boolean> indexed = new ArrayList<Boolean>();
+			for(int i = 0;i<clustered.size();i++) {
+				clustered.add(false);
+			}
+
+			Table t = new Table(strTableName,columnNames,columnTypes,clustered,indexed);
 		}
 
-//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
+
+		//>>>>>>> branch 'master' of https://github.com/reeemsalah/DataBase-Project.git
 	}
 
 	public static void main(String [] args) {

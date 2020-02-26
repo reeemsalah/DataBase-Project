@@ -12,7 +12,8 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	private int numOfPages;
+	private int numOfPages;// don't decrement
+	// fast retrieval of clustered column
 	// private Vector<Object> columnValues;
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
@@ -45,10 +46,9 @@ public class Table implements Serializable {
 			}
 		}
 	}
-
-	public Table returnATable(String tableName) {
-		this.tableName = tableName;
-		return this;
+	//changed  by ahmed
+	public String returnTableName() {
+		return this.tableName;
 	}
 
 }
