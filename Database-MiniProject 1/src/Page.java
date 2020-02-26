@@ -12,8 +12,8 @@ import java.util.Vector;
 public class Page implements Serializable {
 	private int maxRows;
 	private int currentRows = 0;
-	private Comparable maxKey;
-	private Comparable minKey;
+	public Comparable maxKey;
+	public Comparable minKey;
 	private String fileName;
 	private Vector<Tuple> rows;
 

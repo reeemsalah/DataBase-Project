@@ -55,10 +55,16 @@ public static void main(String[] args) {
 		
 //		Page p1 = new Page(10);
 		p1.insertInto(t4);
+		System.out.println("min: "+p1.minKey + " max: "+ p1.maxKey);
 		p1.insertInto(t3);
+		System.out.println("min: "+p1.minKey + " max: "+ p1.maxKey);
 		p1.insertInto(t5);
+		System.out.println("min: "+p1.minKey + " max: "+ p1.maxKey);
 		p1.insertInto(t2);
+		System.out.println("min: "+p1.minKey + " max: "+ p1.maxKey);
 		p1.insertInto(t1);
+		System.out.println("min: "+p1.minKey + " max: "+ p1.maxKey);
+
 
 
 		
