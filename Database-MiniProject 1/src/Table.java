@@ -27,83 +27,71 @@ public class Table implements Serializable {
 	private ArrayList<Boolean> indexedCoulmns;
 	private String clusteredKey;
 	private int numOfPages;
-	private Hashtable <Comparable,Comparable []>pageInfo= new Hashtable<Comparable,Comparable []>();
-	private Vector <Tuple>page; 
+	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
+	private Vector<Tuple> page;
 	// private Vector<Object> columnValues;
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
-			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed,String clusteredKey, int maxRows) {
-		this.tableName=tableName;
-		this.columnNames=columnNames;
-		this.columnTypes=columnTypes;
-		this.clusteredCoulmns=clustered;
-		this.indexedCoulmns=indexed;
+			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKey, int maxRows) {
+		this.tableName = tableName;
+		this.columnNames = columnNames;
+		this.columnTypes = columnTypes;
+		this.clusteredCoulmns = clustered;
+		this.indexedCoulmns = indexed;
 		this.clusteredKey = clusteredKey;
-		Table.maxRows=maxRows;
+		Table.maxRows = maxRows;
 	}
-	public  String addPage()
-	{
-		File file=new File(tableName+"_"+(++numOfPages)+".ser");
+
+	public String addPage() {
+		File file = new File(tableName + "_" + (++numOfPages) + ".ser");
 		try {
-		file.createNewFile();
-		}
-		catch(Exception e)
-		{
+			file.createNewFile();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return tableName+"_"+(++numOfPages)+".ser";
+		return tableName + "_" + (++numOfPages) + ".ser";
 	}
-	
+
 	public void Write(String filename) {
-		// String filename = tableName + "_"+ numOfPages+".ser"; 
-		 
-         
-	        // Serialization  
-	        try
-	        {    
-	            //Saving of object in a file 
-	            FileOutputStream file = new FileOutputStream(filename+".ser"); //overwrites file?
-	            ObjectOutputStream out = new ObjectOutputStream(file); 
-	              
-	            // Method for serialization of object 
-	            out.writeObject(page); 
-	              
-	            out.close(); 
-	            file.close(); 
-	        }
-	        catch(Exception ex) 
-	        { 
-	            ex.printStackTrace();
-	        } 
+		// String filename = tableName + "_"+ numOfPages+".ser";
+
+		// Serialization
+		try {
+			// Saving of object in a file
+			FileOutputStream file = new FileOutputStream(filename + ".ser"); // overwrites file?
+			ObjectOutputStream out = new ObjectOutputStream(file);
+
+			// Method for serialization of object
+			out.writeObject(page);
+
+			out.close();
+			file.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-	
+
 	public void Read(String filename) {
-		
-		try
-				{
-				ObjectInputStream o = new ObjectInputStream( new FileInputStream(filename+".ser"));
-				// Note the typecasts below
-				while(o!=null) {
+
+		try {
+			ObjectInputStream o = new ObjectInputStream(new FileInputStream(filename + ".ser"));
+			// Note the typecasts below
+			while (o != null) {
 				page.add((Tuple) o.readObject());
-				System.out.println(page +" des");
-				}
-				o.close();
-				
-				}
-				catch (ClassNotFoundException e)
-				{
-				System.out.println(e);
-				}
-				catch (FileNotFoundException e)
-				{
-				System.out.println(e);
-				}
-				catch (IOException e)
-				{
-				System.out.println(e);
-				
-				}	
+				System.out.println(page + " des");
+			}
+			o.close();
+
+		} catch (ClassNotFoundException e) {
+			System.out.println(e);
+		} catch (FileNotFoundException e) {
+			System.out.println(e);
+		} catch (IOException e) {
+			System.out.println(e);
+
+		}
 	}
+
 	/*
 	 * public void setName(String tableName) { this.tableName = tableName; }
 	 * 
@@ -114,65 +102,68 @@ public class Table implements Serializable {
 	 * }
 	 */
 	public void insert(Tuple t) {
-		if(numOfPages==0)//Creating the first page
+		if (numOfPages == 0)// Creating the first page
 		{
-			String file1=addPage();
-			pageInfo.put(t.getKeyValue(), new Comparable[] {1,file1});
+			String file1 = addPage();
+			pageInfo.put(t.getKeyValue(), new Comparable[] { 1, file1 });
 			Write(file1);
-		}
-		else//there is atleast one page 
+		} else// there is atleast one page
 		{
-			//putting the set of indices into an Array
-			Object [] tmp=pageInfo.keySet().toArray();
-			Comparable [] keyArr=new Comparable[tmp.length];
+			// putting the set of indices into an Array
+			Object[] tmp = pageInfo.keySet().toArray();
+			Comparable[] keyArr = new Comparable[tmp.length];
 			int i;
-			for( i=0;i<tmp.length;i++)
-				keyArr[i]=(Comparable)tmp[i];
+			for (i = 0; i < tmp.length; i++)
+				keyArr[i] = (Comparable) tmp[i];
 			Arrays.sort(keyArr);
-			for( i=0;i<keyArr.length;i++)
-			{
-				if(t.getKeyValue().compareTo(keyArr[i])>0)
+			for (i = 0; i < keyArr.length; i++) {
+				if (t.getKeyValue().compareTo(keyArr[i]) > 0)
 					break;
 			}
-			//the tuple should be inserted at page with key at index i
-			Comparable [] currentPageInfo=pageInfo.get(keyArr[i]);
-			int noOfPages=(int)currentPageInfo[0];
-			String filename=(String)currentPageInfo[1];
-			//checking if the page is full
-			if(maxRows-noOfPages==0)
+			// the tuple should be inserted at page with key at index i
+			Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
+			int noOfRows = (int) currentPageInfo[0];
+			String filename = (String) currentPageInfo[1];
+			// checking if the page is full
+			// TODO shift a row from current page into next page and then insert the row in
+			// the page
+			if (maxRows - noOfRows == 0)// the page is full
 			{
-				
-			}
-			else//the page isn't full
+				// load the next page and then get the last row and compare it with the current
+				// tuple
+				// if it is smaller then shift the last row of the current page to the next one
+				// and insert the tuple in the current page
+				// otherwise insert the tuple in the next page and update the minKey of the page
+
+			} else// the page isn't full
 			{
-				//reading the info from the file
+				noOfRows++;
+				if (t.getKeyValue().compareTo(keyArr[i]) <0)
+				{
+					pageInfo.remove(keyArr[i]);
+				}
+					
+				// reading the info from the file
 				Read(filename);
-				//inserting the tuple into the array of vectors
-				//TODO get the modified insert from Page.insertInto
-				//overriding the file
+				// inserting the tuple into the array of vectors
+				// TODO get the modified insert from Page.insertInto
+				// overriding the file
 				Write(filename);
 			}
-			 
-			
+
 		}
-		/*
-		 * Iterator<Page> iterator = tablePages.iterator();
-		 * if(tablePages.lastElement().isFull()) {
-		 * 
-		 * } int countPagesSoFar = 0; while (iterator.hasNext()) { if
-		 * (iterator.next().isFull()) { countPagesSoFar++; } else { Page p =
-		 * tablePages.get(countPagesSoFar); p.insertInto(t); } }
-		 */
+		
 	}
 
 	public String returnTableName() {
 		return this.tableName;
 	}
-	
+
 	public String returnClusteredKey() {
 		return this.clusteredKey;
 	}
-	public static void main(String [] args) {
+
+	public static void main(String[] args) {
 //		Table t= new Table("Student", [id, name], []);
 //		Read("file.ser");
 	}
