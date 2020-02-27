@@ -34,6 +34,11 @@ public class Region extends Polygon implements Comparable {
 		}
 		return res;
 	}
+	/**
+	 * 
+	 * @param points takes a string contianing the string representation of a region
+	 * @return the region 
+	 */
 	public static Region StringToRegion(String points) { 
 		String [] arr = points.split(",");
 		int npoints = Integer.parseInt(arr[0]);

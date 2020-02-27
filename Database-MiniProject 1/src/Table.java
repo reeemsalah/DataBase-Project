@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.naming.ldap.SortControl;
 
 @SuppressWarnings("serial")
 public class Table implements Serializable {
@@ -23,7 +27,7 @@ public class Table implements Serializable {
 	private ArrayList<Boolean> indexedCoulmns;
 	private String clusteredKey;
 	private int numOfPages;
-	private Hashtable pageInfo= new Hashtable<String,Comparable []>();
+	private Hashtable <Comparable,Comparable []>pageInfo= new Hashtable<Comparable,Comparable []>();
 	private Vector <Tuple>page; 
 	// private Vector<Object> columnValues;
 
@@ -113,10 +117,42 @@ public class Table implements Serializable {
 		if(numOfPages==0)//Creating the first page
 		{
 			String file1=addPage();
-			pageInfo.put(file1, new Comparable[] {maxRows,t.getKeyValue()});
+			pageInfo.put(t.getKeyValue(), new Comparable[] {1,file1});
+			Write(file1);
 		}
-		else
+		else//there is atleast one page 
 		{
+			//putting the set of indices into an Array
+			Object [] tmp=pageInfo.keySet().toArray();
+			Comparable [] keyArr=new Comparable[tmp.length];
+			int i;
+			for( i=0;i<tmp.length;i++)
+				keyArr[i]=(Comparable)tmp[i];
+			Arrays.sort(keyArr);
+			for( i=0;i<keyArr.length;i++)
+			{
+				if(t.getKeyValue().compareTo(keyArr[i])>0)
+					break;
+			}
+			//the tuple should be inserted at page with key at index i
+			Comparable [] currentPageInfo=pageInfo.get(keyArr[i]);
+			int noOfPages=(int)currentPageInfo[0];
+			String filename=(String)currentPageInfo[1];
+			//checking if the page is full
+			if(maxRows-noOfPages==0)
+			{
+				
+			}
+			else//the page isn't full
+			{
+				//reading the info from the file
+				Read(filename);
+				//inserting the tuple into the array of vectors
+				//TODO get the modified insert from Page.insertInto
+				//overriding the file
+				Write(filename);
+			}
+			 
 			
 		}
 		/*
