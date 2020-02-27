@@ -14,7 +14,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;  
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -30,24 +30,26 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	private String clusteredKeyType;
+	private String clusteredKey;
 	private int numOfPages;
-	// awel comparable da l min key in page wl tany array at index zero no of rows w index 1 esm l file 
+	// awel comparable da l min key in page wl tany array at index zero no of rows w
+	// index 1 esm l file
 	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
 	private Vector<Tuple> page;
 	// private Vector<Object> columnValues;
 
-	//TODO add TouchDate column
+	// TODO add TouchDate column
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
-			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKeyType, int maxRows) {
+			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKey, int maxRows) {
 		this.tableName = tableName;
 		this.columnNames = columnNames;
 		this.columnTypes = columnTypes;
 		this.clusteredCoulmns = clustered;
 		this.indexedCoulmns = indexed;
-		this.clusteredKeyType = clusteredKeyType;
+		this.clusteredKey = clusteredKey;
 		Table.maxRows = maxRows;
 	}
+
 	/**
 	 * 
 	 * @return the new file for the newly created page
@@ -115,7 +117,7 @@ public class Table implements Serializable {
 		if (numOfPages == 0)// Creating the first page
 		{
 			String file1 = addPage();
-			//adding the info in the hashtable
+			// adding the info in the hashtable
 			pageInfo.put(t.getKeyValue(), new Comparable[] { 1, file1 });
 			page.add(t);
 			Write(file1);
@@ -132,7 +134,7 @@ public class Table implements Serializable {
 				if (t.getKeyValue().compareTo(keyArr[i]) < 0)
 					break;
 			}
-			if(i!=0)
+			if (i != 0)
 				i--;
 			// the tuple should be inserted at page with key at index i
 			Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
@@ -152,12 +154,11 @@ public class Table implements Serializable {
 			} else// the page isn't full
 			{
 				noOfRows++;
-				if (t.getKeyValue().compareTo(keyArr[i]) <0)
-				{
+				if (t.getKeyValue().compareTo(keyArr[i]) < 0) {
 					pageInfo.remove(keyArr[i]);
 					pageInfo.put(t.getKeyValue(), currentPageInfo);
 				}
-					
+
 				// reading the info from the file
 				Read(filename);
 				// inserting the tuple into the array of vectors
@@ -167,7 +168,22 @@ public class Table implements Serializable {
 			}
 
 		}
-		
+
+	}
+	public void delete(Tuple t)
+	{
+		Object[] tmp = pageInfo.keySet().toArray();
+		Comparable[] keyArr = new Comparable[tmp.length];
+		int i;
+		for (i = 0; i < tmp.length; i++)
+			keyArr[i] = (Comparable) tmp[i];
+		Arrays.sort(keyArr);
+		for (i = 0; i < keyArr.length; i++) {
+			if (clusteredKey.compareTo((String) keyArr[i]) < 0)
+				break;
+		}
+		if (i != 0)
+			i--;
 	}
 
 	public String returnTableName() {
@@ -175,43 +191,39 @@ public class Table implements Serializable {
 	}
 
 	public String returnClusteredKey() {
-		return this.clusteredKeyType;
+		return this.clusteredKey;
 	}
-	
-	public void updateTable(String strClusteringKey,Hashtable<String,Object> htblColNameValue )
+
+	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, ParseException {
 
-				Object[] tmp = pageInfo.keySet().toArray();
-				Comparable[] keyArr = new Comparable[tmp.length];
-				int i;
-				for (i = 0; i < tmp.length; i++)
-					keyArr[i] = (Comparable) tmp[i];
-				Arrays.sort(keyArr);
-				for (i = 0; i < keyArr.length; i++) {
-					if (strClusteringKey.compareTo((String) keyArr[i]) < 0)
-						break;
-				}
-				if(i!=0)
-					i--;
-				Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
-				String filename = (String) currentPageInfo[1];
-				Read(filename);
-				for(int j=0;i<page.size();i++) {
-				if(page.get(i).getKeyValue().toString().equals(strClusteringKey)) {
-					Tuple t= page.get(i);
-					for(String key :htblColNameValue.keySet()) {
-						t.edit(key,(Comparable)(htblColNameValue.get(key)));
-				
-					}
-					
-					
-				}
+		Object[] tmp = pageInfo.keySet().toArray();
+		Comparable[] keyArr = new Comparable[tmp.length];
+		int i;
+		for (i = 0; i < tmp.length; i++)
+			keyArr[i] = (Comparable) tmp[i];
+		Arrays.sort(keyArr);
+		for (i = 0; i < keyArr.length; i++) {
+			if (strClusteringKey.compareTo((String) keyArr[i]) < 0)
+				break;
+		}
+		if (i != 0)
+			i--;
+		Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
+		String filename = (String) currentPageInfo[1];
+		Read(filename);
+		for (int j = 0; i < page.size(); i++) {
+			if (page.get(i).getKeyValue().toString().equals(strClusteringKey)) {
+				Tuple t = page.get(i);
+				for (String key : htblColNameValue.keySet()) {
+					t.edit(key, (Comparable) (htblColNameValue.get(key)));
+
 				}
 
-			
-			
+			}
 		}
-	
+
+	}
 
 	public static void main(String[] args) {
 //		Table t= new Table("Student", [id, name], []);
