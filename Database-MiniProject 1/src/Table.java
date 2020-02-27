@@ -80,8 +80,8 @@ public class Table implements Serializable {
 				ObjectInputStream o = new ObjectInputStream( new FileInputStream(filename+".ser"));
 				// Note the typecasts below
 				while(o!=null) {
-				Tuple foo1 = (Tuple) o.readObject();
-				System.out.println(foo1 +" des");
+				page.add((Tuple) o.readObject());
+				System.out.println(page +" des");
 				}
 				o.close();
 				
@@ -135,6 +135,10 @@ public class Table implements Serializable {
 	
 	public String returnClusteredKey() {
 		return this.clusteredKey;
+	}
+	public static void main(String [] args) {
+//		Table t= new Table("Student", [id, name], []);
+//		Read("file.ser");
 	}
 
 }

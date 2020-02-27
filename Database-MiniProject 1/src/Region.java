@@ -34,6 +34,19 @@ public class Region extends Polygon implements Comparable {
 		}
 		return res;
 	}
+	public static Region StringToRegion(String points) { //string tokenizer(splits string) https://www.javatpoint.com/string-tokenizer-in-java
+		String [] arr = points.split(",");
+		int npoints = Integer.parseInt(arr[0]);
+		int [] xpoints = new int[npoints];
+		int [] ypoints = new int[npoints];
+		for(int i=1;i<=npoints;i++) {
+			xpoints[i]= Integer.parseInt(arr[i]);
+			ypoints[i+npoints]=Integer.parseInt(arr[i+npoints]);
+		}
+		Region r = new Region( xpoints,  ypoints, npoints);
+		return r;
+	}
+	
 	public static void main(String[] args) {
 		Region r1=new Region(new int[]{1,2,3},new int[]{4,5,6},3);
 		Region r2=new Region(new int[]{0,0,0},new int[]{0,1,-1},3);
