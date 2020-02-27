@@ -177,12 +177,10 @@ public class Table implements Serializable {
 	public String returnClusteredKey() {
 		return this.clusteredKeyType;
 	}
+	
 	public void updateTable(String strClusteringKey,Hashtable<String,Object> htblColNameValue )
 			throws DBAppException, ParseException {
-			Enumeration n=htblColNameValue.elements();
-			String colname=(String)n.nextElement();
-			Object value=n.nextElement();
-			
+
 				Object[] tmp = pageInfo.keySet().toArray();
 				Comparable[] keyArr = new Comparable[tmp.length];
 				int i;
@@ -200,7 +198,13 @@ public class Table implements Serializable {
 				Read(filename);
 				for(int j=0;i<page.size();i++) {
 				if(page.get(i).getKeyValue().toString().equals(strClusteringKey)) {
-					page.get(i).edit(colname,(Comparable)value);
+					Tuple t= page.get(i);
+					for(String key :htblColNameValue.keySet()) {
+						t.edit(key,(Comparable)(htblColNameValue.get(key)));
+				
+					}
+					
+					
 				}
 				}
 
