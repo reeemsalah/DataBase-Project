@@ -1,3 +1,4 @@
+import java.awt.Polygon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +13,10 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;  
+import java.util.Date;
+import java.util.Enumeration;
 
 import javax.naming.ldap.SortControl;
 
@@ -27,6 +32,7 @@ public class Table implements Serializable {
 	private ArrayList<Boolean> indexedCoulmns;
 	private String clusteredKeyType;
 	private int numOfPages;
+	// awel comparable da l min key in page wl tany array at index zero no of rows w index 1 esm l file 
 	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
 	private Vector<Tuple> page;
 	// private Vector<Object> columnValues;
@@ -171,6 +177,37 @@ public class Table implements Serializable {
 	public String returnClusteredKey() {
 		return this.clusteredKeyType;
 	}
+	public void updateTable(String strClusteringKey,Hashtable<String,Object> htblColNameValue )
+			throws DBAppException, ParseException {
+			Enumeration n=htblColNameValue.elements();
+			String colname=(String)n.nextElement();
+			Object value=n.nextElement();
+			
+				Object[] tmp = pageInfo.keySet().toArray();
+				Comparable[] keyArr = new Comparable[tmp.length];
+				int i;
+				for (i = 0; i < tmp.length; i++)
+					keyArr[i] = (Comparable) tmp[i];
+				Arrays.sort(keyArr);
+				for (i = 0; i < keyArr.length; i++) {
+					if (strClusteringKey.compareTo((String) keyArr[i]) < 0)
+						break;
+				}
+				if(i!=0)
+					i--;
+				Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
+				String filename = (String) currentPageInfo[1];
+				Read(filename);
+				for(int j=0;i<page.size();i++) {
+				if(page.get(i).getKeyValue().toString().equals(strClusteringKey)) {
+					page.get(i).edit(colname,(Comparable)value);
+				}
+				}
+
+			
+			
+		}
+	
 
 	public static void main(String[] args) {
 //		Table t= new Table("Student", [id, name], []);
