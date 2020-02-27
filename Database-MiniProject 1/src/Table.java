@@ -25,23 +25,27 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	private String clusteredKey;
+	private String clusteredKeyType;
 	private int numOfPages;
 	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
 	private Vector<Tuple> page;
 	// private Vector<Object> columnValues;
 
+	//TODO add TouchDate column
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
-			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKey, int maxRows) {
+			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKeyType, int maxRows) {
 		this.tableName = tableName;
 		this.columnNames = columnNames;
 		this.columnTypes = columnTypes;
 		this.clusteredCoulmns = clustered;
 		this.indexedCoulmns = indexed;
-		this.clusteredKey = clusteredKey;
+		this.clusteredKeyType = clusteredKeyType;
 		Table.maxRows = maxRows;
 	}
-
+	/**
+	 * 
+	 * @return the new file for the newly created page
+	 */
 	public String addPage() {
 		File file = new File(tableName + "_" + (++numOfPages) + ".ser");
 		try {
@@ -105,7 +109,9 @@ public class Table implements Serializable {
 		if (numOfPages == 0)// Creating the first page
 		{
 			String file1 = addPage();
+			//adding the info in the hashtable
 			pageInfo.put(t.getKeyValue(), new Comparable[] { 1, file1 });
+			page.add(t);
 			Write(file1);
 		} else// there is atleast one page
 		{
@@ -117,7 +123,7 @@ public class Table implements Serializable {
 				keyArr[i] = (Comparable) tmp[i];
 			Arrays.sort(keyArr);
 			for (i = 0; i < keyArr.length; i++) {
-				if (t.getKeyValue().compareTo(keyArr[i]) > 0)
+				if (t.getKeyValue().compareTo(keyArr[i]) < 0)
 					break;
 			}
 			if(i!=0)
@@ -143,6 +149,7 @@ public class Table implements Serializable {
 				if (t.getKeyValue().compareTo(keyArr[i]) <0)
 				{
 					pageInfo.remove(keyArr[i]);
+					pageInfo.put(t.getKeyValue(), currentPageInfo);
 				}
 					
 				// reading the info from the file
@@ -162,7 +169,7 @@ public class Table implements Serializable {
 	}
 
 	public String returnClusteredKey() {
-		return this.clusteredKey;
+		return this.clusteredKeyType;
 	}
 
 	public static void main(String[] args) {
