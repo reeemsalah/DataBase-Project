@@ -120,6 +120,8 @@ public class Table implements Serializable {
 				if (t.getKeyValue().compareTo(keyArr[i]) > 0)
 					break;
 			}
+			if(i!=0)
+				i--;
 			// the tuple should be inserted at page with key at index i
 			Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
 			int noOfRows = (int) currentPageInfo[0];
