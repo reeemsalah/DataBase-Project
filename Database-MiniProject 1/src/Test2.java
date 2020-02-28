@@ -1,5 +1,6 @@
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class Test2 {
 	public static void main(String[] args) {
@@ -9,19 +10,13 @@ public class Test2 {
 		 * tmp.remove(2); System.out.println(tmp.keySet().size());
 		 */
 		
-			double x1=2.5;
-			String x2="2.5";
-			String x3=""+2.5;
-			System.out.println(x2.equals(x3));
-			Integer x4=1;
-			String x5=x4.toString();
-			String x6="1";
-			System.out.println(x5.equals(x5));
-			Date d= new Date();
-			String x7=d.toString();
-			String x8="Thu Feb 27 18:58:04 EET 2020";
-			System.out.println(x7);
-			
+		Vector<String> test=new Vector<String>();
+		test.add("hi");
+		test.add("hello");
+		System.out.println(test.size());
+		test.remove("hi");
+		test.remove("hello");
+		System.out.println(test.size());
 			
 	}
 

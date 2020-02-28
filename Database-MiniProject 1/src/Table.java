@@ -307,29 +307,35 @@ public class Table implements Serializable {
 	public void delete(Tuple t) {
 		page.clear();
 		// putting the set of file names into an Array
-		String[] tmp = (String[]) pageInfo.keySet().toArray();
-		String[] keyArr = new String[tmp.length];
-		int i;
-		for (i = 0; i < tmp.length; i++)
-			keyArr[i] = (String) tmp[i]; // copy file names into keyArr
-		Arrays.sort(keyArr); // needless but can be kept
-		for (i = 0; i < keyArr.length; i++) {
-			Comparable minIndex = pageInfo.get(keyArr[i])[1];
-			if (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each page
-				break; // stop at page wanted (first page where entry key is greater)
+		/*
+		 * String[] tmp = (String[]) pageInfo.keySet().toArray(); String[] keyArr = new
+		 * String[tmp.length]; int i; for (i = 0; i < tmp.length; i++) keyArr[i] =
+		 * (String) tmp[i]; // copy file names into keyArr Arrays.sort(keyArr); //
+		 * needless but can be kept for (i = 0; i < keyArr.length; i++) { Comparable
+		 * minIndex = pageInfo.get(keyArr[i])[1]; if
+		 * (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each
+		 * page break; // stop at page wanted (first page where entry key is greater) }
+		 * if (i != 0) i--;
+		 */
+		ArrayList<String> pages=findPages(t);
+		for(String fileName: pages)
+		{
+			deleteFromPage(fileName,t);
 		}
-		if (i != 0)
-			i--;
-		deleteFromPage(keyArr[i], t);
-		Comparable minKey = pageInfo.get(keyArr[i])[1];
+		//deleteFromPage(keyArr[i], t);
+		//Comparable minKey = pageInfo.get(keyArr[i])[1];
 		//if we have pages with similar keys
-		while(i>=0 && pageInfo.get(keyArr[i])[1].compareTo(minKey)==0 && minKey.compareTo(t.getKeyValue())==0) {
-			deleteFromPage(keyArr[i], t);
-			i--;
-		}
+		//while(i>=0 && pageInfo.get(keyArr[i])[1].compareTo(minKey)==0 && minKey.compareTo(t.getKeyValue())==0) {
+		//	deleteFromPage(keyArr[i], t);
+		//	i--;
+		
 
 	}
-
+/**
+ * 
+ * @param fileName name of the file to delete t tuple from
+ * @param t tuple to be deleted
+ */
 	public void deleteFromPage(String fileName, Tuple t) {
 		page.clear();
 		Read(fileName);
@@ -344,8 +350,8 @@ public class Table implements Serializable {
 		} else {
 			Comparable[] currentPageInfo = pageInfo.get(fileName);
 			int currentNoOfPages = (int) currentPageInfo[0];
-			pageInfo.replace(fileName, new Comparable[] { --currentNoOfPages, currentPageInfo[1] });
-			updateMinKey(fileName);
+			pageInfo.replace(fileName, new Comparable[] { --currentNoOfPages, updateMinKey(fileName),updateMaxKey(fileName) });
+			
 		}
 		Write(fileName);
 		page.clear();
@@ -413,15 +419,24 @@ public String getTableName() {
 	// updates the min key of the page in the page vector
 	/**
 	 * 
-	 * @param key the filename of the page to be upadted
+	 * @param fileName 
+	 * @return updated minimum key of fileName
 	 */
-	public void updateMinKey(String fileName) {
-		Comparable minKey = page.firstElement().getKeyValue();
-		Comparable[] newInfo = pageInfo.get(fileName);
-		newInfo[1] = minKey;
-		pageInfo.replace(fileName, newInfo);
+	public Comparable updateMinKey(String fileName) {
+		return page.firstElement().getKeyValue();
+		
 
 	}
+	/**
+	 * 
+	 * @param fileName
+	 * @return updated maximum key of fileName
+	 */
+	public Comparable updateMaxKey(String fileName) {
+		return page.lastElement().getKeyValue();
+		
+	}
+	
 
 	public void deletePage(String fileName) {
 		File file = new File(fileName);
