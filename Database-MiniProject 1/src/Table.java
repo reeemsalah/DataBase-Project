@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +50,21 @@ public class Table implements Serializable {
 		this.indexedCoulmns = indexed;
 		this.clusteredKey = clusteredKey;
 		Table.maxRows = maxRows;
+	}
+	
+	// to find the pages 
+	public ArrayList<String> findPages(Tuple t) {
+		Comparable tKey = t.getKeyValue();
+		ArrayList<String> pages = new ArrayList<String>();
+		Set<String> keys = pageInfo.keySet();
+		for(String key:keys) {
+			Comparable[] temp = pageInfo.get(key);
+			if(tKey.compareTo(temp[1])>0 && tKey.compareTo(temp[2])<0) {
+				pages.add((String)tKey);
+			}
+		}
+		return pages;
+		
 	}
 
 	/**
@@ -105,15 +121,6 @@ public class Table implements Serializable {
 		}
 	}
 
-	/*
-	 * public void setName(String tableName) { this.tableName = tableName; }
-	 * 
-	 * public void addToNames(String columnName) { this.columnNames.add(columnName);
-	 * }
-	 * 
-	 * public void addToTypes(String columnType) { this.columnTypes.add(columnType);
-	 * }
-	 */
 	public void insert(Tuple t) {
 		page.clear();
 		if (numOfPages == 0)// Creating the first page
