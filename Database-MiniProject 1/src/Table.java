@@ -30,16 +30,14 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
+	//Clustered key Column Name
 	private String clusteredKey;
 	private int numOfPages;
-//	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
 	// awel string esm el file w el array of comparables at index 0 el current
 	// noOfRows
 	// array of comparables at index 1 hoe el minKey fel page
 	private Hashtable<String, Comparable[]> pageInfo = new Hashtable<String, Comparable[]>();
-
 	private Vector<Tuple> page;
-	// private Vector<Object> columnValues;
 
 	// TODO add TouchDate column
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
@@ -350,6 +348,7 @@ public class Table implements Serializable {
 			updateMinKey(fileName);
 		}
 		Write(fileName);
+		page.clear();
 	}
 
 	public String returnTableName() {
