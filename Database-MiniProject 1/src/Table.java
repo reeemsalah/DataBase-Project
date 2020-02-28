@@ -121,187 +121,156 @@ public class Table implements Serializable {
 		}
 	}
 
+
+	  public String getNextPage(String currFile) { 
+		  // gets the next page(in terms of key) after current file
+	  
+	  // String[] tmp = (String[]) pageInfo.entrySet()
+		  Comparable currKey = pageInfo.get(currFile)[2];
+	  
+	  String[] tmp = (String[]) pageInfo.keySet().toArray(); 
+	  String[] keyArr = new
+	  String[tmp.length]; 
+	  int i; for (i = 0; i < tmp.length; i++)
+		  keyArr[i] =  (String) tmp[i]; 
+	  // copy file names into keyArr Arrays.sort(keyArr); //	  needless but can be kept
+	  boolean found = false; 
+	  for (i = 0; i < keyArr.length; i++) {
+		  Comparable maxIndex = pageInfo.get(keyArr[i])[2]; 
+		  if(currKey.compareTo(maxIndex) <= 0) // compare to min index of each page 
+			  found= true; 
+		  break; // stop at page wanted (first page where entry key is greater)
+	  }
+	  if (found) { 
+		  return keyArr[i]; 
+		  } else { return null; }
+	  
+	  }
+	 
+	
 	public void insert(Tuple t) {
 		page.clear();
-		if (numOfPages == 0)// Creating the first page
-		{
-			String file1 = addPage();
-			// adding the info in the hashtable
-			pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue() });
-			page.add(t); // only add to vector
-			Write(file1); // write to new file
-		} else// there is atleast one page
-		{
-			// putting the set of file names into an Array
-			String[] tmp = (String[]) pageInfo.keySet().toArray();
-			String[] keyArr = new String[tmp.length];
-			int i;
-			for (i = 0; i < tmp.length; i++)
-				keyArr[i] = (String) tmp[i]; // copy file names into keyArr
-			Arrays.sort(keyArr); // needless but can be kept
-			for (i = 0; i < keyArr.length; i++) {
-				Comparable minIndex = pageInfo.get(keyArr[i])[1];
-				if (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each page
-					break; // stop at page wanted (first page where entry key is greater)
-			}
-			if (i != 0)
-				i--; // whyyyyy???????????????????-----------------------------------------------------------
-
-			// the tuple should be inserted at page with key at index i
-			String filename = keyArr[i];
-			Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
-			int noOfRows = (int) currentPageInfo[0];
-			Comparable min = (String) currentPageInfo[1];
-			// checking if the page is full
-
-			// TODO shift a row from current page into next page and then insert the row in
-			// the page
-			Tuple tempTuple;
-			if (maxRows - noOfRows == 0)// the page is full
-			{
-
-				Read(filename);
-				insertPage(t);
-				Write(filename);
-				// load the next page and then get the last row and compare it with the current
-				// tuple
-				tempTuple = page.lastElement();
-				page.remove(page.lastElement());
-
-				if (getNextPage(filename) != null) {
-//				insert into next page
-					insertNext(t, filename);
-//					what if next page full???
-
-				} else { // if this is the last page??
-
-//				create new page
-					page.clear();
-					String file2 = addPage();
-					// adding the info in the hashtable
-					pageInfo.put(file2, new Comparable[] { 1, t.getKeyValue() });
-//					insert into new page
-					page.add(t); // only add to vector
-					Write(file2);
+		String[] allFiles = (String []) pageInfo.keySet().toArray();
+		Comparable [] allMin = new Comparable[allFiles.length];
+		Comparable [] allMax = new Comparable[allFiles.length];
+		int i=0;
+		 for(String name: allFiles){
+	          allMin[i]= (Comparable) pageInfo.get(name)[1];
+	          allMax[i]= (Comparable) pageInfo.get(name)[2];
+	        }
+		 Arrays.sort(allMin);
+		 Arrays.sort(allMax);
+		
+		ArrayList<String> options = findPages(t);
+		if(options.size()==0) {
+			
+			if(pageInfo.isEmpty()) {
+				options.add(addPage());
+			}else {
+				if(t.getKeyValue().compareTo(allMin[0])<0) //smaller than smallest key
+					{
+					for(int j=0;j<allFiles.length;j++) {
+						if(pageInfo.get(allFiles[j])[1]==allMin[0]) {
+							options.add(allFiles[i]);
+						}
+					}
+				}else  // larger than largest key
+				{
+					if(t.getKeyValue().compareTo(allMax[allMax.length-1])>0) {
+						for(int j=0;j<allFiles.length;j++) {
+							if(pageInfo.get(allFiles[j])[1]==allMax[allMax.length-1]) {
+								options.add(allFiles[i]);
+							}
+						}
+					}
 				}
-
-				// if it is smaller then shift the last row of the current page to the next one
-				// and insert the tuple in the current page
-
-//	//			 otherwise insert the tuple in the next page and update the minKey of the page
-//				trynext(tuple, filename);
-
-			} else// the page isn't full
-			{
-				noOfRows++;
-				if (t.getKeyValue().compareTo(keyArr[i]) < 0) {
-					// if new value is smaller than minkey for this page, update minkey
-					pageInfo.remove(keyArr[i]);
-					currentPageInfo[0] = (Comparable) noOfRows;
-					currentPageInfo[1] = (Comparable) t.getKeyValue();
-					pageInfo.put(filename, currentPageInfo);
-				}
-
-				// reading the info from the file
-				Read(filename);
-				insertPage(t);
-				// inserting the tuple into the array of vectors
-				// TODO get the modified insert from Page.insertInto
-				// overriding the file
-				Write(filename);
+				
 			}
-
+			
 		}
-
+		insertHelper(t, options);
 	}
-
-	public void insertNext(Tuple t, String filename) {
-
-		String newFile = getNextPage(filename);
-		int rowCount = (int) pageInfo.get(newFile)[0];
-		if (rowCount - maxRows < 0) {
-			Read(newFile);
-			insertPage(t);
-			Write(newFile);
-		} else {
-//		Read(newFile);
-//		insertPage(t);
-//		Write(newFile);
-			// load the next page and then get the last row and compare it with the current
-			// tuple
-			Tuple tempTuple = page.lastElement();
-			page.remove(page.lastElement());
-
-			if (getNextPage(filename) != null) {
-//		insert into next page
-				insertNext(t, newFile);
-//			what if next page full???
-
-			} else { // if this is the last page??
-
-//		create new page
-				page.clear();
-				String file2 = addPage();
-				// adding the info in the hashtable
-				pageInfo.put(file2, new Comparable[] { 1, t.getKeyValue() });
-//			insert into new page
-				page.add(t); // only add to vector
-				Write(file2);
-			}
-
-		}
-		// if it is smaller then shift the last row of the current page to the next one
-		// and insert the tuple in the current page
-
-////			 otherwise insert the tuple in the next page and update the minKey of the page
-//		trynext(tuple, filename);
-
-	}
-
-	public String getNextPage(String currFile) { // gets the next page(in terms of key) after current file
-
-//			String[] tmp = (String[]) pageInfo.entrySet()
-		Comparable currKey = pageInfo.get(currFile)[1];
-
-		String[] tmp = (String[]) pageInfo.keySet().toArray();
-		String[] keyArr = new String[tmp.length];
-		int i;
-		for (i = 0; i < tmp.length; i++)
-			keyArr[i] = (String) tmp[i]; // copy file names into keyArr
-		Arrays.sort(keyArr); // needless but can be kept
+	public void insertHelper(Tuple t, ArrayList<String> pages) {
 		boolean found = false;
-		for (i = 0; i < keyArr.length; i++) {
-			Comparable minIndex = pageInfo.get(keyArr[i])[1];
-			if (currKey.compareTo(minIndex) <= 0) // compare to min index of each page
-				found = true;
-			break; // stop at page wanted (first page where entry key is greater)
+		for(int i=0;i<pages.size();i++) {
+			if(!isPageFull(pages.get(i))) {
+				found=true;
+				Read(pages.get(i));
+				insertPage(t);
+				updateMinKey(pages.get(i)); updateMaxKey(pages.get(i));
+				Write(pages.get(i));
+			}
 		}
-		if (found) {
-			return keyArr[i];
-		} else {
-			return null;
+		if(!found) {
+			//insert into last possible page and copy and remove one row
+			Read(pages.get(pages.size()-1));
+			insertPage(t);
+			Tuple temp = page.lastElement();
+			page.remove(page.lastElement());
+			updateMinKey(pages.get(pages.size()-1)); updateMaxKey(pages.get(pages.size()-1));
+			Write(pages.get(pages.size()-1));
+			
+			String next = getNextPage(pages.get(pages.size()-1)); //what if arraylist is not sorted by minkey?
+			
+			if(next==null) {//no next page
+				String file1 = addPage(); // adding the info in the hashtable
+				 pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue() , t.getKeyValue()});
+				  page.add(t); // only add to vector 
+				  Write(file1); // write to new file
+			}else {
+				if(!isPageFull(next)) { //shifting can be done
+					Read(next);
+					insertPage(t);
+					updateMinKey(next); updateMaxKey(next);
+					Write(next);
+				}else { //next is full
+					page.clear();
+					Read(next);
+					insertPage(temp);
+					Tuple temp2 = page.lastElement();
+					page.remove(page.lastElement());
+					updateMinKey(next); updateMaxKey(next);
+					Write(next);
+					insert(temp2);
+				}
+				
+				
+				
+				
+			}
+						
 		}
-
 	}
+	
 
+	
+	public boolean isPageFull(String filename) {
+		int noOfRows =(int) pageInfo.get(filename)[0];
+		if (maxRows-noOfRows>0) {
+			return false;
+		}else
+		return true;
+	}
+	
+	
 	public void insertPage(Tuple t) {
 
 		if (this.page.size() > 0) {
 			Iterator it = this.page.iterator();
 			int i = 0;
-			boolean flag = false;
-			while (it.hasNext() && flag == true) {
+			boolean inserted = false;
+			while (it.hasNext() && inserted == true) {
 				Tuple tmp = (Tuple) it.next();
 				i++;
 				if (tmp.compareTo(t) < 0) {
 					this.page.insertElementAt(t, i + 1);
-					flag = true;
+					inserted = true;
 //				 this.rows.add(t);
 
 				}
 				i++;
 			}
-			if (!flag) {
+			if (!inserted) {
 				page.add(t);
 			}
 		} else {
