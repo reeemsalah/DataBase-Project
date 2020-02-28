@@ -62,16 +62,15 @@ public class DBApp {
 	}
 
 	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
-		Table temp = null;
-		boolean flag = false;
-		for (int i = 0; i < tables.size(); i++) {
-			if (tables.get(i).returnTableName().equals(strTableName)) {
+				boolean flag = false;
+		String [] tableNames=(String[])(tables.keySet().toArray());
+		for (int i = 0; i < tableNames.length; i++) {
+			if (tableNames[i].equals(strTableName)) {
 				flag = true;
-				temp = tables.get(i);
 				break;
 			}
 		}
-		if (flag == false) {
+		if (!flag) {
 			throw new DBAppException("This table doens't exist");
 		} else {
 
@@ -80,8 +79,8 @@ public class DBApp {
 			for (String key : keys) {
 				tempHash.put(key, (Comparable) htblColNameValue.get(key));
 			}
-			Tuple t = new Tuple(tempHash, temp.returnClusteredKey());
-			temp.insert(t);
+			Tuple t = new Tuple(tempHash, tables.get(strTableName).returnClusteredKey());
+			tables.get(strTableName).insert(t);
 		}
 	}
 

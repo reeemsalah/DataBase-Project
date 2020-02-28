@@ -4,8 +4,8 @@ import java.util.Hashtable;
    @SuppressWarnings("serial")
    
 public class Tuple implements Serializable, Comparable{
-	
-	private transient String  key;
+	//Name of Clustering Key Column
+	private  String  key;
 	@SuppressWarnings("rawtypes")
 	private Hashtable <String,Comparable>attributes;
 	 
