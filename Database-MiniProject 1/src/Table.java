@@ -32,9 +32,10 @@ public class Table implements Serializable {
 	private ArrayList<Boolean> indexedCoulmns;
 	private String clusteredKey;
 	private int numOfPages;
-	// awel comparable da l min key in page wl tany array at index zero no of rows w
-	// index 1 esm l file
 //	private Hashtable<Comparable, Comparable[]> pageInfo = new Hashtable<Comparable, Comparable[]>();
+	// awel string esm el file w el array of comparables at index 0 el current
+	// noOfRows
+	// array of comparables at index 1 hoe el minKey fel page
 	private Hashtable<String, Comparable[]> pageInfo = new Hashtable<String, Comparable[]>();
 
 	private Vector<Tuple> page;
@@ -120,10 +121,10 @@ public class Table implements Serializable {
 		if (numOfPages == 0)// Creating the first page
 		{
 			String file1 = addPage();
-			//adding the info in the hashtable
+			// adding the info in the hashtable
 			pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue() });
-			page.add(t);	//only add to vector
-			Write(file1);	 //write to new file
+			page.add(t); // only add to vector
+			Write(file1); // write to new file
 		} else// there is atleast one page
 		{
 			// putting the set of file names into an Array
@@ -131,31 +132,29 @@ public class Table implements Serializable {
 			String[] keyArr = new String[tmp.length];
 			int i;
 			for (i = 0; i < tmp.length; i++)
-				keyArr[i] = (String) tmp[i];	//copy file names into keyArr
-			Arrays.sort(keyArr);		//needless but can be kept
+				keyArr[i] = (String) tmp[i]; // copy file names into keyArr
+			Arrays.sort(keyArr); // needless but can be kept
 			for (i = 0; i < keyArr.length; i++) {
 				Comparable minIndex = pageInfo.get(keyArr[i])[1];
-				if (t.getKeyValue().compareTo(minIndex) < 0) //compare to min index of each page
-					break;				//stop at page wanted (first page where entry key is greater)
+				if (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each page
+					break; // stop at page wanted (first page where entry key is greater)
 			}
-			if(i!=0)		
-				i--; //whyyyyy???????????????????-----------------------------------------------------------
-		
+			if (i != 0)
+				i--; // whyyyyy???????????????????-----------------------------------------------------------
+
 			// the tuple should be inserted at page with key at index i
 			String filename = keyArr[i];
-			Comparable[] currentPageInfo  = pageInfo.get(keyArr[i]);
+			Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
 			int noOfRows = (int) currentPageInfo[0];
 			Comparable min = (String) currentPageInfo[1];
 			// checking if the page is full
-			
+
 			// TODO shift a row from current page into next page and then insert the row in
 			// the page
 			Tuple tempTuple;
 			if (maxRows - noOfRows == 0)// the page is full
 			{
-				
-				
-				
+
 				Read(filename);
 				insertPage(t);
 				Write(filename);
@@ -163,45 +162,41 @@ public class Table implements Serializable {
 				// tuple
 				tempTuple = page.lastElement();
 				page.remove(page.lastElement());
-				
-				if(getNextPage(filename)!=null) {
+
+				if (getNextPage(filename) != null) {
 //				insert into next page
 					insertNext(t, filename);
 //					what if next page full???
-					
-				}else {		//			if this is the last page??
+
+				} else { // if this is the last page??
 
 //				create new page
 					page.clear();
 					String file2 = addPage();
-					//adding the info in the hashtable
+					// adding the info in the hashtable
 					pageInfo.put(file2, new Comparable[] { 1, t.getKeyValue() });
 //					insert into new page
-					page.add(t);	//only add to vector
+					page.add(t); // only add to vector
 					Write(file2);
 				}
 
-				
-				
 				// if it is smaller then shift the last row of the current page to the next one
 				// and insert the tuple in the current page
-				
-				
+
 //	//			 otherwise insert the tuple in the next page and update the minKey of the page
 //				trynext(tuple, filename);
 
 			} else// the page isn't full
 			{
 				noOfRows++;
-				if (t.getKeyValue().compareTo(keyArr[i]) <0)
-				{
-					//if new value is smaller than minkey for this page, update minkey
+				if (t.getKeyValue().compareTo(keyArr[i]) < 0) {
+					// if new value is smaller than minkey for this page, update minkey
 					pageInfo.remove(keyArr[i]);
-					currentPageInfo[0] = (Comparable)noOfRows;
-					currentPageInfo[1] = (Comparable)t.getKeyValue();
+					currentPageInfo[0] = (Comparable) noOfRows;
+					currentPageInfo[1] = (Comparable) t.getKeyValue();
 					pageInfo.put(filename, currentPageInfo);
 				}
-					
+
 				// reading the info from the file
 				Read(filename);
 				insertPage(t);
@@ -212,124 +207,149 @@ public class Table implements Serializable {
 			}
 
 		}
-		
+
 	}
-	
+
 	public void insertNext(Tuple t, String filename) {
-		
+
 		String newFile = getNextPage(filename);
 		int rowCount = (int) pageInfo.get(newFile)[0];
-		if (rowCount-maxRows<0) {
+		if (rowCount - maxRows < 0) {
 			Read(newFile);
 			insertPage(t);
-			Write(newFile);		
-		}else {
+			Write(newFile);
+		} else {
 //		Read(newFile);
 //		insertPage(t);
 //		Write(newFile);
-		// load the next page and then get the last row and compare it with the current
-		// tuple
-		Tuple tempTuple = page.lastElement();
-		page.remove(page.lastElement());
-		
-		if(getNextPage(filename)!=null) {
+			// load the next page and then get the last row and compare it with the current
+			// tuple
+			Tuple tempTuple = page.lastElement();
+			page.remove(page.lastElement());
+
+			if (getNextPage(filename) != null) {
 //		insert into next page
-			insertNext(t, newFile);
+				insertNext(t, newFile);
 //			what if next page full???
-			
-		}else {		//			if this is the last page??
+
+			} else { // if this is the last page??
 
 //		create new page
-			page.clear();
-			String file2 = addPage();
-			//adding the info in the hashtable
-			pageInfo.put(file2, new Comparable[] { 1, t.getKeyValue() });
+				page.clear();
+				String file2 = addPage();
+				// adding the info in the hashtable
+				pageInfo.put(file2, new Comparable[] { 1, t.getKeyValue() });
 //			insert into new page
-			page.add(t);	//only add to vector
-			Write(file2);
-		}
+				page.add(t); // only add to vector
+				Write(file2);
+			}
 
-		
 		}
 		// if it is smaller then shift the last row of the current page to the next one
 		// and insert the tuple in the current page
-		
-		
+
 ////			 otherwise insert the tuple in the next page and update the minKey of the page
 //		trynext(tuple, filename);
 
 	}
-	
-	public String getNextPage(String currFile){	// gets the next page(in terms of key) after current file
-		
+
+	public String getNextPage(String currFile) { // gets the next page(in terms of key) after current file
+
 //			String[] tmp = (String[]) pageInfo.entrySet()
 		Comparable currKey = pageInfo.get(currFile)[1];
-		
+
 		String[] tmp = (String[]) pageInfo.keySet().toArray();
 		String[] keyArr = new String[tmp.length];
 		int i;
 		for (i = 0; i < tmp.length; i++)
-			keyArr[i] = (String) tmp[i];	//copy file names into keyArr
-		Arrays.sort(keyArr);		//needless but can be kept
+			keyArr[i] = (String) tmp[i]; // copy file names into keyArr
+		Arrays.sort(keyArr); // needless but can be kept
 		boolean found = false;
 		for (i = 0; i < keyArr.length; i++) {
 			Comparable minIndex = pageInfo.get(keyArr[i])[1];
-			if (currKey.compareTo(minIndex) <= 0) //compare to min index of each page
-				found =true;
-				break;				//stop at page wanted (first page where entry key is greater)
+			if (currKey.compareTo(minIndex) <= 0) // compare to min index of each page
+				found = true;
+			break; // stop at page wanted (first page where entry key is greater)
 		}
 		if (found) {
-		return keyArr[i];}
-		else {return null;}
-		
+			return keyArr[i];
+		} else {
+			return null;
+		}
 
-		
 	}
-	 public void insertPage(Tuple t)
-	 {
-		  
-		 if(this.page.size()>0) {
-		 Iterator it=this.page.iterator();
-		 int i=0;
-		 boolean flag=false;
-		 while(it.hasNext()&&flag==true)
-		 {
-			 Tuple tmp=(Tuple)it.next();
-			 i++;
-			 if(tmp.compareTo(t)<0)
-			 {
-				 this.page.insertElementAt(t, i+1);
-				 flag=true;
+
+	public void insertPage(Tuple t) {
+
+		if (this.page.size() > 0) {
+			Iterator it = this.page.iterator();
+			int i = 0;
+			boolean flag = false;
+			while (it.hasNext() && flag == true) {
+				Tuple tmp = (Tuple) it.next();
+				i++;
+				if (tmp.compareTo(t) < 0) {
+					this.page.insertElementAt(t, i + 1);
+					flag = true;
 //				 this.rows.add(t);
 
-			 }
-			 i++;
-		 }
-		 if(!flag) {
-			 page.add(t);
-}
-		 }
-		 else {
+				}
+				i++;
+			}
+			if (!flag) {
+				page.add(t);
+			}
+		} else {
 //		 this.rows.insertElementAt(t, 0);
-			 this.page.add(t);
+			this.page.add(t);
 
-			 }
-	 }
-	 
-	public void delete(Tuple t)
-	{
-		Object[] tmp = pageInfo.keySet().toArray();
-		Comparable[] keyArr = new Comparable[tmp.length];
+		}
+	}
+
+	public void delete(Tuple t) {
+		page.clear();
+		// putting the set of file names into an Array
+		String[] tmp = (String[]) pageInfo.keySet().toArray();
+		String[] keyArr = new String[tmp.length];
 		int i;
 		for (i = 0; i < tmp.length; i++)
-			keyArr[i] = (Comparable) tmp[i];
-		Arrays.sort(keyArr);
+			keyArr[i] = (String) tmp[i]; // copy file names into keyArr
+		Arrays.sort(keyArr); // needless but can be kept
 		for (i = 0; i < keyArr.length; i++) {
-			if (clusteredKey.compareTo((String) keyArr[i]) < 0)
-				break;
+			Comparable minIndex = pageInfo.get(keyArr[i])[1];
+			if (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each page
+				break; // stop at page wanted (first page where entry key is greater)
 		}
 		if (i != 0)
 			i--;
+		deleteFromPage(keyArr[i], t);
+		Comparable minKey = pageInfo.get(keyArr[i])[1];
+		//if we have pages with similar keys
+		while(i>=0 && pageInfo.get(keyArr[i])[1].compareTo(minKey)==0 && minKey.compareTo(t.getKeyValue())==0) {
+			deleteFromPage(keyArr[i], t);
+			i--;
+		}
+
+	}
+
+	public void deleteFromPage(String fileName, Tuple t) {
+		page.clear();
+		Read(fileName);
+		for (Tuple t1 : page) {
+			if (t1.compareTo(t) == 0) {
+				page.remove(t1);
+				break;
+			}
+		}
+		if (page.size() == 0) {
+			deletePage(fileName);
+		} else {
+			Comparable[] currentPageInfo = pageInfo.get(fileName);
+			int currentNoOfPages = (int) currentPageInfo[0];
+			pageInfo.replace(fileName, new Comparable[] { --currentNoOfPages, currentPageInfo[1] });
+			updateMinKey(fileName);
+		}
+		Write(fileName);
 	}
 
 	public String returnTableName() {
@@ -369,6 +389,25 @@ public class Table implements Serializable {
 			}
 		}
 
+	}
+
+	// updates the min key of the page in the page vector
+	/**
+	 * 
+	 * @param key the filename of the page to be upadted
+	 */
+	public void updateMinKey(String fileName) {
+		Comparable minKey = page.firstElement().getKeyValue();
+		Comparable[] newInfo = pageInfo.get(fileName);
+		newInfo[1] = minKey;
+		pageInfo.replace(fileName, newInfo);
+
+	}
+
+	public void deletePage(String fileName) {
+		File file = new File(fileName);
+		file.delete();
+		pageInfo.remove(fileName);
 	}
 
 	public static void main(String[] args) {
