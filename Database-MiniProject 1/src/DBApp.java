@@ -1,7 +1,10 @@
 
 //<<<<<<< HEAD
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Hashtable;
@@ -14,6 +17,10 @@ public class DBApp {
 	private static int maxRows;
 	private static int nodeSize;
 
+	public DBApp() {
+		tables = new Hashtable<String, Table>();
+	}
+
 	public void init() {
 		Properties DBApp = new Properties();
 		DBApp.put("MaximumRowsCountinPage", maxRows);
@@ -22,13 +29,16 @@ public class DBApp {
 
 	public void createTable(String strTableName, String strClusteringKeyColumn,
 			Hashtable<String, String> htblColNameType) throws DBAppException {
-		String[] tableNames = (String[]) (tables.keySet().toArray());
-
 		boolean flag = false;
-		for (int i = 0; i < tableNames.length; i++) {
-			if (tableNames[i].equals(strTableName)) {
-				flag = true;
-				break;
+
+		if (tables.size() != 0) {
+			String[] tableNames = (String[]) (tables.keySet().toArray());
+
+			for (int i = 0; i < tableNames.length; i++) {
+				if (tableNames[i].equals(strTableName)) {
+					flag = true;
+					break;
+				}
 			}
 		}
 		if (flag == true) {
@@ -51,11 +61,12 @@ public class DBApp {
 			}
 			ArrayList<Boolean> indexed = new ArrayList<Boolean>();
 			for (int i = 0; i < clustered.size(); i++) {
-				clustered.add(false);
+				indexed.add(false);
 			}
 
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
 					maxRows);
+			tables.put(strTableName, t);
 			insertIntoMetaData(t);
 
 		}
@@ -104,7 +115,7 @@ public class DBApp {
 	 * }
 	 */
 	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
-		
+
 		boolean flag = false;
 		String[] tableNames = (String[]) (tables.keySet().toArray());
 		for (int i = 0; i < tableNames.length; i++) {
@@ -127,15 +138,34 @@ public class DBApp {
 		}
 
 	}
-	public static void insertIntoMetaData(Table t)
-	{
-		String tableName=t.getTableName();
-		ArrayList<String> columnNames= t.getColumnNames();
-		ArrayList<String> columnTypes=t.getColumnTypes();
-		ArrayList<Boolean> clusteredColumns=t.getClusteredCoulmns();
-		ArrayList<Boolean> indexedColumns=t.getIndexedCoulmns();
-		String toBeInserted="Table Name, Column Name, Column Type, ClusteringKey, Indexed";
-		
+
+	public static void insertIntoMetaData(Table t) {
+		String tableName = t.getTableName();
+		ArrayList<String> columnNames = t.getColumnNames();
+		ArrayList<String> columnTypes = t.getColumnTypes();
+		ArrayList<Boolean> clusteredColumns = t.getClusteredCoulmns();
+		ArrayList<Boolean> indexedColumns = t.getIndexedCoulmns();
+		String toBeInserted = "Table Name, Column Name, Column Type, ClusteringKey, Indexed";
+		File file = new File("metadata.csv");
+		try {
+			FileWriter f = new FileWriter("metadata.csv");
+			BufferedWriter bw = new BufferedWriter(f);
+			bw.write(toBeInserted);
+			bw.write("\n");
+			for (int i = 0; i < columnNames.size(); i++) {
+				toBeInserted = tableName + "," + columnNames.get(i) + "," + columnTypes.get(i) + ","
+						+ clusteredColumns.get(i) + "," + indexedColumns.get(i);
+				bw.write(toBeInserted);
+				//line for testing
+				//System.out.println("line " + (i) + " inserted");
+				bw.write("\n");
+			}
+			bw.flush();
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void main(String[] args) {
@@ -166,5 +196,16 @@ public class DBApp {
 		//
 		// }
 		// deserialisation end
+		String strTableName = "Student";
+		DBApp dbApp = new DBApp();
+		Hashtable htblColNameType = new Hashtable();
+		htblColNameType.put("id", "java.lang.Integer");
+		htblColNameType.put("name", "java.lang.String");
+		htblColNameType.put("gpa", "java.lang.double");
+		try {
+			dbApp.createTable(strTableName, "id", htblColNameType);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
