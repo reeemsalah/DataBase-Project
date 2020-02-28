@@ -62,8 +62,8 @@ public class DBApp {
 	}
 
 	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
-				boolean flag = false;
-		String [] tableNames=(String[])(tables.keySet().toArray());
+		boolean flag = false;
+		String[] tableNames = (String[]) (tables.keySet().toArray());
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
 				flag = true;
@@ -82,6 +82,49 @@ public class DBApp {
 			Tuple t = new Tuple(tempHash, tables.get(strTableName).returnClusteredKey());
 			tables.get(strTableName).insert(t);
 		}
+	}
+
+	// TODO Uncomment when updateTable is changed
+	/*
+	 * public void updateTable(String strTableName, String strClusteringKey,
+	 * Hashtable<String, Object> htblColNameValue) throws DBAppException {
+	 * 
+	 * boolean flag = false; String[] tableNames = (String[])
+	 * (tables.keySet().toArray()); for (int i = 0; i < tableNames.length; i++) { if
+	 * (tableNames[i].equals(strTableName)) { flag = true; break; } } if (!flag) {
+	 * throw new DBAppException("This table doens't exist"); } else {
+	 * 
+	 * Hashtable<String, Comparable> tempHash = new Hashtable<String, Comparable>();
+	 * Set<String> keys = htblColNameValue.keySet(); for (String key : keys) {
+	 * tempHash.put(key, (Comparable) htblColNameValue.get(key)); } Tuple t = new
+	 * Tuple(tempHash, tables.get(strTableName).returnClusteredKey());
+	 * tables.get(strTableName).updateTable(strClusteringKey, t); }
+	 * 
+	 * }
+	 */
+	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
+		
+		boolean flag = false;
+		String[] tableNames = (String[]) (tables.keySet().toArray());
+		for (int i = 0; i < tableNames.length; i++) {
+			if (tableNames[i].equals(strTableName)) {
+				flag = true;
+				break;
+			}
+		}
+		if (!flag) {
+			throw new DBAppException("This table doens't exist");
+		} else {
+
+			Hashtable<String, Comparable> tempHash = new Hashtable<String, Comparable>();
+			Set<String> keys = htblColNameValue.keySet();
+			for (String key : keys) {
+				tempHash.put(key, (Comparable) htblColNameValue.get(key));
+			}
+			Tuple t = new Tuple(tempHash, tables.get(strTableName).returnClusteredKey());
+			tables.get(strTableName).delete(t);
+		}
+
 	}
 
 	public static void main(String[] args) {

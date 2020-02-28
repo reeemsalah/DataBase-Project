@@ -358,9 +358,9 @@ public class Table implements Serializable {
 	public String returnClusteredKey() {
 		return this.clusteredKey;
 	}
-
+//TODO change signature to Tuple t instead of Hashtable
 	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException, ParseException {
+			throws DBAppException{
 
 		Object[] tmp = pageInfo.keySet().toArray();
 		Comparable[] keyArr = new Comparable[tmp.length];
