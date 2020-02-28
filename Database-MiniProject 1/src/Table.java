@@ -358,7 +358,27 @@ public class Table implements Serializable {
 	public String returnClusteredKey() {
 		return this.clusteredKey;
 	}
-//TODO change signature to Tuple t instead of Hashtable
+public String getTableName() {
+		return tableName;
+	}
+
+	public ArrayList<String> getColumnNames() {
+		return columnNames;
+	}
+
+	public ArrayList<String> getColumnTypes() {
+		return columnTypes;
+	}
+
+	public ArrayList<Boolean> getClusteredCoulmns() {
+		return clusteredCoulmns;
+	}
+
+	public ArrayList<Boolean> getIndexedCoulmns() {
+		return indexedCoulmns;
+	}
+
+	//TODO change signature to Tuple t instead of Hashtable
 	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException{
 

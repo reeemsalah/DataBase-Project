@@ -43,7 +43,7 @@ public class DBApp {
 			}
 			ArrayList<Boolean> clustered = new ArrayList<Boolean>();
 			for (int i = 0; i < columnNames.size(); i++) {
-				if (columnNames.equals(strClusteringKeyColumn)) {
+				if (columnNames.get(i).equals(strClusteringKeyColumn)) {
 					clustered.add(true);
 				} else {
 					clustered.add(false);
@@ -129,7 +129,12 @@ public class DBApp {
 	}
 	public static void insertIntoMetaData(Table t)
 	{
-		
+		String tableName=t.getTableName();
+		ArrayList<String> columnNames= t.getColumnNames();
+		ArrayList<String> columnTypes=t.getColumnTypes();
+		ArrayList<Boolean> clusteredColumns=t.getClusteredCoulmns();
+		ArrayList<Boolean> indexedColumns=t.getIndexedCoulmns();
+		String toBeInserted="Table Name, Column Name, Column Type, ClusteringKey, Indexed";
 		
 	}
 
