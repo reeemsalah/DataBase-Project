@@ -56,6 +56,7 @@ public class DBApp {
 
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
 					maxRows);
+			insertIntoMetaData(t);
 
 		}
 
@@ -125,6 +126,11 @@ public class DBApp {
 			tables.get(strTableName).delete(t);
 		}
 
+	}
+	public static void insertIntoMetaData(Table t)
+	{
+		
+		
 	}
 
 	public static void main(String[] args) {
