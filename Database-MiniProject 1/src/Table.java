@@ -175,9 +175,29 @@ public class Table implements Serializable {
 		}
 
 	}
+	
+	public boolean checkInsert(Tuple t) throws DBAppException{
+		Hashtable<String, String>  tableData = readTableMetadata();
+	
+	 String[] colNames = (String[]) tableData.keySet().toArray();
+	  
+	 for(String col: colNames) {
+		 if(!(tableData.get(col).toLowerCase()).equals((t.getAttributes().get(col)).getClass().getCanonicalName().toLowerCase())) {
+			 throw new DBAppException("type msimatch.cannot insert");
+		 }
+	 }
+	 return true;
+  }
+	
 
 	public void insert(Tuple t) {
 		page.clear();
+		try {
+			checkInsert(t);
+		} catch (DBAppException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String[] allFiles = (String[]) pageInfo.keySet().toArray();
 		Comparable[] allMin = new Comparable[allFiles.length];
 		Comparable[] allMax = new Comparable[allFiles.length];
@@ -371,23 +391,44 @@ public class Table implements Serializable {
 		return indexedCoulmns;
 	}
 
-	public String[] readTableMetadata() {
-		String line = "";
-		String splitBy = ",";
-		String[] contents = null;
-		try {
-			// parsing a CSV file into BufferedReader class constructor
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			while ((line = br.readLine()) != null) // returns a Boolean value
-			{
-				contents = line.split(splitBy); // use comma as separator
+	public Hashtable<String, String>  readTableMetadata() throws DBAppException {
+		String line = "";  
+		String splitBy = ",";  
+		ArrayList<String> tableColNames = new ArrayList<String>();
+		ArrayList<String> tableColTypes = new ArrayList<String>();
 
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		try   
+		{  
+		//parsing a CSV file into BufferedReader class constructor  
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));  
+		while ((line = br.readLine()) != null)   //returns a Boolean value  
+		{  
+		String[] entry = line.split(splitBy);    // use comma as separator  
+		//System.out.println("Employee [First Name=" + employee[0] + ", Last Name=" + employee[1] + ", Designation=" + employee[2] + ", Contact=" + employee[3] + ", Salary= " + employee[4] + ", City= " + employee[5] +"]");  
+		if(entry[0].contentEquals(tableName)) {
+		
+				tableColNames.add(entry[1]);
+				tableColTypes.add(entry[2]);
 		}
-		// closes the scanner
-		return contents;
+		
+		}  
+		}   
+		catch (IOException e)   
+		{  
+		e.printStackTrace();  
+		} 
+		
+		System.out.println(tableColNames);
+		System.out.println(tableColTypes);
+		Hashtable<String, String> colInfo = new Hashtable<String, String>();		
+		if (tableColNames.size()==tableColTypes.size()) {
+			
+			for(int i=0;i<tableColNames.size();i++) {
+				colInfo.put(tableColNames.get(i), tableColTypes.get(i));
+			}
+			
+		}else {throw new DBAppException("Table metadata error");}
+		return colInfo;
 	}
 
 	// TODO change signature to Tuple t instead of Hashtable

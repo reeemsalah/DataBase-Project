@@ -78,6 +78,12 @@ public class DBApp {
 
 	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
 		boolean flag = false;
+		
+		java.util.Date date=new java.util.Date();  
+		System.out.println(date);
+		htblColNameValue.put("TouchDate",date ); 
+		
+		
 		String[] tableNames = (String[]) (tables.keySet().toArray());
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
