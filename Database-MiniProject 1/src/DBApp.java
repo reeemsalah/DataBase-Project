@@ -1,5 +1,3 @@
-
-//<<<<<<< HEAD
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +49,9 @@ public class DBApp {
 				columnNames.add(key);
 				columnTypes.add(htblColNameType.get(key));
 			}
+			columnNames.add("TouchDate");
+			columnTypes.add("java.util.Date");
+			
 			ArrayList<Boolean> clustered = new ArrayList<Boolean>();
 			for (int i = 0; i < columnNames.size(); i++) {
 				if (columnNames.get(i).equals(strClusteringKeyColumn)) {
@@ -59,15 +60,17 @@ public class DBApp {
 					clustered.add(false);
 				}
 			}
+			clustered.add(false);
 			ArrayList<Boolean> indexed = new ArrayList<Boolean>();
 			for (int i = 0; i < clustered.size(); i++) {
 				indexed.add(false);
 			}
+			indexed.add(false);
 
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
 					maxRows);
 			tables.put(strTableName, t);
-			insertIntoMetaData(t);
+			insertIntoMetaData(t,true);
 
 		}
 
@@ -139,7 +142,7 @@ public class DBApp {
 
 	}
 
-	public static void insertIntoMetaData(Table t) {
+	public static void insertIntoMetaData(Table t, boolean append) {
 		String tableName = t.getTableName();
 		ArrayList<String> columnNames = t.getColumnNames();
 		ArrayList<String> columnTypes = t.getColumnTypes();
@@ -148,7 +151,7 @@ public class DBApp {
 		String toBeInserted = "Table Name, Column Name, Column Type, ClusteringKey, Indexed";
 		File file = new File("metadata.csv");
 		try {
-			FileWriter f = new FileWriter("metadata.csv");
+			FileWriter f = new FileWriter("metadata.csv",append);
 			BufferedWriter bw = new BufferedWriter(f);
 			bw.write(toBeInserted);
 			bw.write("\n");
@@ -166,6 +169,15 @@ public class DBApp {
 			e.printStackTrace();
 		}
 
+	}
+	public void updateMetaDataFile()
+	{
+		for(String tableName: tables.keySet())
+		{
+			Table t=tables.get(tableName);
+			insertIntoMetaData(t, false);
+			
+		}
 	}
 
 	public static void main(String[] args) {
