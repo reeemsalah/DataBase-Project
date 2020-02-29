@@ -1,8 +1,10 @@
 import java.awt.Polygon;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -343,32 +345,43 @@ public class Table implements Serializable {
 		return indexedCoulmns;
 	}
 
-	// TODO change signature to Tuple t instead of Hashtable
-	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue) throws DBAppException {
+	public String[] readTableMetadata() {
+		String line = "";
+		String splitBy = ",";
+		String[] contents = null;
+		try {
+			// parsing a CSV file into BufferedReader class constructor
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			while ((line = br.readLine()) != null) // returns a Boolean value
+			{
+				contents = line.split(splitBy); // use comma as separator
 
-		Object[] tmp = pageInfo.keySet().toArray();
-		Comparable[] keyArr = new Comparable[tmp.length];
-		int i;
-		for (i = 0; i < tmp.length; i++)
-			keyArr[i] = (Comparable) tmp[i];
-		Arrays.sort(keyArr);
-		for (i = 0; i < keyArr.length; i++) {
-			if (strClusteringKey.compareTo((String) keyArr[i]) < 0)
-				break;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		if (i != 0)
-			i--;
-		Comparable[] currentPageInfo = pageInfo.get(keyArr[i]);
-		String filename = (String) currentPageInfo[1];
-		Read(filename);
-		for (int j = 0; i < page.size(); i++) {
-			if (page.get(i).getKeyValue().toString().equals(strClusteringKey)) {
-				Tuple t = page.get(i);
-				for (String key : htblColNameValue.keySet()) {
-					t.edit(key, (Comparable) (htblColNameValue.get(key)));
+		// closes the scanner
+		return contents;
+	}
 
+	// TODO change signature to Tuple t instead of Hashtable
+	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
+		ArrayList<String> pages = findPages(t);
+		for (String fileName : pages) {
+			Read(fileName);
+			for (Tuple t1 : page) {
+				String[] contents = readTableMetadata();
+				// String colname=contents[1];
+				String coltype = contents[2];
+
+				if (coltype.equals(t.getClass().getCanonicalName())) {
+					for (String key : t.getAttributes().keySet())
+						t1.edit(key, t.getValueOfColumn(key));
 				}
 
+				Date currentdate = new Date();
+
+				t1.edit("TouchDate", currentdate);
 			}
 		}
 
