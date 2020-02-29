@@ -84,45 +84,71 @@ public class Table implements Serializable {
 	}
 
 	public void Write(String filename) {
-		// String filename = tableName + "_"+ numOfPages+".ser";
-
+		 
 		// Serialization
+		
 		try {
 			// Saving of object in a file
-			FileOutputStream file = new FileOutputStream(filename + ".ser"); // overwrites file?
-			ObjectOutputStream out = new ObjectOutputStream(file);
-
+			FileOutputStream file1 = new FileOutputStream(filename+".ser" ); // overwrites file?
+			ObjectOutputStream out = new ObjectOutputStream(file1);
+			
 			// Method for serialization of object
-			out.writeObject(page);
+			out.writeObject(tableName);
+			out.writeObject(columnNames);
+			out.writeObject(columnTypes);
+			out.writeObject(clusteredCoulmns);
+			out.writeObject(indexedCoulmns);
+			out.writeObject(clusteredKey);
+			out.writeObject(maxRows);
+
+
+
+
+
 
 			out.close();
-			file.close();
+			file1.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
+}
 
 	public void Read(String filename) {
-
 		try {
-			ObjectInputStream o = new ObjectInputStream(new FileInputStream(filename + ".ser"));
-			// Note the typecasts below
-			while (o != null) {
-				page.add((Tuple) o.readObject());
-				System.out.println(page + " des");
+			//ObjectInputStream o = new ObjectInputStream(new FileInputStream(filename ));
+			FileInputStream fi = new FileInputStream((filename+".ser"));
+			ObjectInputStream o = new ObjectInputStream(fi);
+
+
+			
+			while(o!=null) {
+				o.read();
+				System.out.println(tableName);
+				System.out.println(columnNames);
+				System.out.println(columnTypes);
+				System.out.println(clusteredCoulmns);
+				System.out.println(indexedCoulmns);
+				System.out.println(clusteredKey);
+				System.out.println(maxRows);
+				
+				break;
+				
+				
 			}
 			o.close();
+			fi.close();
+			
 
-		} catch (ClassNotFoundException e) {
-			System.out.println(e);
-		} catch (FileNotFoundException e) {
-			System.out.println(e);
-		} catch (IOException e) {
-			System.out.println(e);
-
-		}
+			} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			} catch (IOException e) {
+			e.printStackTrace();
+			}
+			
 	}
-
+	      
+	  
+	     
 	public String getNextPage(String currFile) {
 		// gets the next page(in terms of key) after current file
 
@@ -448,8 +474,23 @@ public class Table implements Serializable {
 	}
 
 	public static void main(String[] args) {
-//		Table t= new Table("Student", [id, name], []);
+    	ArrayList<String> columns = new ArrayList<String>();
+		columns.add("id");
+		columns.add("name");
+		ArrayList<String> types = new ArrayList<String>();
+		types.add("boolean");
+		types.add("integer");
+		ArrayList<Boolean> indexed = new ArrayList<Boolean>();
+		indexed.add(false);
+		indexed.add(false);
+		ArrayList<Boolean> clustered = new ArrayList<Boolean>();
+		clustered.add(true);
+		clustered.add(false);
+		
+		Table t= new Table("Student", columns, types, indexed,clustered , "id", 10);
 //		Read("file.ser");
+		t.Write("tablefile");
+		t.Read("tablefile");
 	}
 
 }
