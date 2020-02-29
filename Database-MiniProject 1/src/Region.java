@@ -34,7 +34,7 @@ public class Region extends Polygon implements Comparable {
 
 	/**
 	 * 
-	 * @param points takes a string contianing the string representation of a region
+	 * @param points takes a string containing the string representation of a region
 	 * @return the region
 	 */
 	public static Region StringToRegion(String points) {

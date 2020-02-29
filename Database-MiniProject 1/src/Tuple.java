@@ -30,7 +30,6 @@ public class Tuple implements Serializable, Comparable {
 
 	@SuppressWarnings("rawtypes")
 	public String getKey() {
-		// return attributes.get(key);
 		return (String) key;
 	}
 
