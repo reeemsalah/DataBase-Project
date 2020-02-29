@@ -290,7 +290,7 @@ public class Table implements Serializable {
 	/**
 	 * 
 	 * @param fileName name of the file to delete t tuple from
-	 * @param t        tuple to be deleted
+	 * @param t        tuple to be deleted from fileName
 	 */
 	public void deleteFromPage(String fileName, Tuple t) {
 		page.clear();
@@ -399,6 +399,39 @@ public class Table implements Serializable {
 		File file = new File(fileName);
 		file.delete();
 		pageInfo.remove(fileName);
+	}
+
+	/**
+	 * 
+	 * @param t tuple t
+	 * @return an array of files that may contain t sorted in ascending order
+	 *         according to their minimum key
+	 */
+	public ArrayList<String> findPage(Tuple t) {
+		Comparable tupleKey = t.getKeyValue();
+		// holds the values of the pages that may contain the tuple
+		ArrayList<String> temp = new ArrayList<String>();
+		for (String key : pageInfo.keySet()) {
+			Comparable minKey = pageInfo.get(key)[1];
+			Comparable maxKey = pageInfo.get(key)[2];
+			if (tupleKey.compareTo(minKey) >= 0 && tupleKey.compareTo(maxKey) <= 0) {
+				temp.add(key);
+			}
+
+		}
+		ArrayList<String> res = new ArrayList<String>();
+		for (String s1 : temp) {
+			Comparable minKey1 = pageInfo.get(s1)[1];
+			String toBeInserted = s1;
+			for (String s2 : temp) {
+				Comparable minKey2 = pageInfo.get(s2)[1];
+				if (!s1.equals(s2) && minKey1.compareTo(minKey2) > 0) {
+					toBeInserted = s2;
+				}
+			}
+			res.add(toBeInserted);
+		}
+		return res;
 	}
 
 	public static void main(String[] args) {

@@ -51,7 +51,7 @@ public class DBApp {
 			}
 			columnNames.add("TouchDate");
 			columnTypes.add("java.util.Date");
-			
+
 			ArrayList<Boolean> clustered = new ArrayList<Boolean>();
 			for (int i = 0; i < columnNames.size(); i++) {
 				if (columnNames.get(i).equals(strClusteringKeyColumn)) {
@@ -70,7 +70,7 @@ public class DBApp {
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
 					maxRows);
 			tables.put(strTableName, t);
-			insertIntoMetaData(t,true);
+			insertIntoMetaData(t, true);
 
 		}
 
@@ -142,6 +142,12 @@ public class DBApp {
 
 	}
 
+	/**
+	 * 
+	 * @param t      table to be added to the metadata.csv
+	 * @param append whether to append it to the file (true) or to override the file
+	 *               (false)
+	 */
 	public static void insertIntoMetaData(Table t, boolean append) {
 		String tableName = t.getTableName();
 		ArrayList<String> columnNames = t.getColumnNames();
@@ -151,7 +157,7 @@ public class DBApp {
 		String toBeInserted = "Table Name, Column Name, Column Type, ClusteringKey, Indexed";
 		File file = new File("metadata.csv");
 		try {
-			FileWriter f = new FileWriter("metadata.csv",append);
+			FileWriter f = new FileWriter("metadata.csv", append);
 			BufferedWriter bw = new BufferedWriter(f);
 			bw.write(toBeInserted);
 			bw.write("\n");
@@ -159,8 +165,8 @@ public class DBApp {
 				toBeInserted = tableName + "," + columnNames.get(i) + "," + columnTypes.get(i) + ","
 						+ clusteredColumns.get(i) + "," + indexedColumns.get(i);
 				bw.write(toBeInserted);
-				//line for testing
-				//System.out.println("line " + (i) + " inserted");
+				// line for testing
+				// System.out.println("line " + (i) + " inserted");
 				bw.write("\n");
 			}
 			bw.flush();
@@ -170,44 +176,17 @@ public class DBApp {
 		}
 
 	}
-	public void updateMetaDataFile()
-	{
-		for(String tableName: tables.keySet())
-		{
-			Table t=tables.get(tableName);
+
+	public void updateMetaDataFile() {
+		for (String tableName : tables.keySet()) {
+			Table t = tables.get(tableName);
 			insertIntoMetaData(t, false);
-			
+
 		}
 	}
 
 	public static void main(String[] args) {
-		// deserialisation start
-		// try
-		// {
-		// ObjectInputStream o = new ObjectInputStream( new
-		// FileInputStream("file.ser"));
-		//// Note the typecasts below
-		// while(o!=null) {
-		// Page foo1 = (Page) o.readObject();
-		// System.out.println(foo1 +" des");
-		// }
-		// o.close();
-		//
-		// }
-		// catch (ClassNotFoundException e)
-		// {
-		// System.out.println(e);
-		// }
-		// catch (FileNotFoundException e)
-		// {
-		// System.out.println(e);
-		// }
-		// catch (IOException e)
-		// {
-		// System.out.println(e);
-		//
-		// }
-		// deserialisation end
+
 		String strTableName = "Student";
 		DBApp dbApp = new DBApp();
 		Hashtable htblColNameType = new Hashtable();
