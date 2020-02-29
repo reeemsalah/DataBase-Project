@@ -92,4 +92,14 @@ public class Tuple implements Serializable, Comparable{
 		
 		return (this.attributes).toString();
 	}
+	public boolean helperDelete (Hashtable<String, Comparable> htblColNameValue)
+	{
+		
+		for(String key : htblColNameValue.keySet())
+		{
+			if(htblColNameValue.get(key).compareTo(this.getValueOfColumn(key))!=0)
+				return false;
+		}
+		return true;
+	}
 }

@@ -31,7 +31,7 @@ public class Table implements Serializable {
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
 	private ArrayList<Boolean> indexedCoulmns;
-	//Clustered key Column Name
+	// Clustered key Column Name
 	private String clusteredKey;
 	private int numOfPages;
 	// awel string esm el file w el array of comparables at index 0 el current
@@ -51,20 +51,20 @@ public class Table implements Serializable {
 		this.clusteredKey = clusteredKey;
 		Table.maxRows = maxRows;
 	}
-	
-	// to find the pages 
+
+	// to find the pages
 	public ArrayList<String> findPages(Tuple t) {
 		Comparable tKey = t.getKeyValue();
 		ArrayList<String> pages = new ArrayList<String>();
 		Set<String> keys = pageInfo.keySet();
-		for(String key:keys) {
+		for (String key : keys) {
 			Comparable[] temp = pageInfo.get(key);
-			if(tKey.compareTo(temp[1])>0 && tKey.compareTo(temp[2])<0) {
-				pages.add((String)tKey);
+			if (tKey.compareTo(temp[1]) > 0 && tKey.compareTo(temp[2]) < 0) {
+				pages.add((String) tKey);
 			}
 		}
 		return pages;
-		
+
 	}
 
 	/**
@@ -121,138 +121,137 @@ public class Table implements Serializable {
 		}
 	}
 
+	public String getNextPage(String currFile) {
+		// gets the next page(in terms of key) after current file
 
-	  public String getNextPage(String currFile) { 
-		  // gets the next page(in terms of key) after current file
-	  
-	  // String[] tmp = (String[]) pageInfo.entrySet()
-		  Comparable currKey = pageInfo.get(currFile)[2];
-	  
-	  String[] tmp = (String[]) pageInfo.keySet().toArray(); 
-	  String[] keyArr = new
-	  String[tmp.length]; 
-	  int i; for (i = 0; i < tmp.length; i++)
-		  keyArr[i] =  (String) tmp[i]; 
-	  // copy file names into keyArr Arrays.sort(keyArr); //	  needless but can be kept
-	  boolean found = false; 
-	  for (i = 0; i < keyArr.length; i++) {
-		  Comparable maxIndex = pageInfo.get(keyArr[i])[2]; 
-		  if(currKey.compareTo(maxIndex) <= 0) // compare to min index of each page 
-			  found= true; 
-		  break; // stop at page wanted (first page where entry key is greater)
-	  }
-	  if (found) { 
-		  return keyArr[i]; 
-		  } else { return null; }
-	  
-	  }
-	 
-	
+		// String[] tmp = (String[]) pageInfo.entrySet()
+		Comparable currKey = pageInfo.get(currFile)[2];
+
+		String[] tmp = (String[]) pageInfo.keySet().toArray();
+		String[] keyArr = new String[tmp.length];
+		int i;
+		for (i = 0; i < tmp.length; i++)
+			keyArr[i] = (String) tmp[i];
+		// copy file names into keyArr Arrays.sort(keyArr); // needless but can be kept
+		boolean found = false;
+		for (i = 0; i < keyArr.length; i++) {
+			Comparable maxIndex = pageInfo.get(keyArr[i])[2];
+			if (currKey.compareTo(maxIndex) <= 0) // compare to min index of each page
+				found = true;
+			break; // stop at page wanted (first page where entry key is greater)
+		}
+		if (found) {
+			return keyArr[i];
+		} else {
+			return null;
+		}
+
+	}
+
 	public void insert(Tuple t) {
 		page.clear();
-		String[] allFiles = (String []) pageInfo.keySet().toArray();
-		Comparable [] allMin = new Comparable[allFiles.length];
-		Comparable [] allMax = new Comparable[allFiles.length];
-		int i=0;
-		 for(String name: allFiles){
-	          allMin[i]= (Comparable) pageInfo.get(name)[1];
-	          allMax[i]= (Comparable) pageInfo.get(name)[2];
-	        }
-		 Arrays.sort(allMin);
-		 Arrays.sort(allMax);
-		
+		String[] allFiles = (String[]) pageInfo.keySet().toArray();
+		Comparable[] allMin = new Comparable[allFiles.length];
+		Comparable[] allMax = new Comparable[allFiles.length];
+		int i = 0;
+		for (String name : allFiles) {
+			allMin[i] = (Comparable) pageInfo.get(name)[1];
+			allMax[i] = (Comparable) pageInfo.get(name)[2];
+		}
+		Arrays.sort(allMin);
+		Arrays.sort(allMax);
+
 		ArrayList<String> options = findPages(t);
-		if(options.size()==0) {
-			
-			if(pageInfo.isEmpty()) {
+		if (options.size() == 0) {
+
+			if (pageInfo.isEmpty()) {
 				options.add(addPage());
-			}else {
-				if(t.getKeyValue().compareTo(allMin[0])<0) //smaller than smallest key
-					{
-					for(int j=0;j<allFiles.length;j++) {
-						if(pageInfo.get(allFiles[j])[1]==allMin[0]) {
+			} else {
+				if (t.getKeyValue().compareTo(allMin[0]) < 0) // smaller than smallest key
+				{
+					for (int j = 0; j < allFiles.length; j++) {
+						if (pageInfo.get(allFiles[j])[1] == allMin[0]) {
 							options.add(allFiles[i]);
 						}
 					}
-				}else  // larger than largest key
+				} else // larger than largest key
 				{
-					if(t.getKeyValue().compareTo(allMax[allMax.length-1])>0) {
-						for(int j=0;j<allFiles.length;j++) {
-							if(pageInfo.get(allFiles[j])[1]==allMax[allMax.length-1]) {
+					if (t.getKeyValue().compareTo(allMax[allMax.length - 1]) > 0) {
+						for (int j = 0; j < allFiles.length; j++) {
+							if (pageInfo.get(allFiles[j])[1] == allMax[allMax.length - 1]) {
 								options.add(allFiles[i]);
 							}
 						}
 					}
 				}
-				
+
 			}
-			
+
 		}
 		insertHelper(t, options);
 	}
+
 	public void insertHelper(Tuple t, ArrayList<String> pages) {
 		boolean found = false;
-		for(int i=0;i<pages.size();i++) {
-			if(!isPageFull(pages.get(i))) {
-				found=true;
+		for (int i = 0; i < pages.size(); i++) {
+			if (!isPageFull(pages.get(i))) {
+				found = true;
 				Read(pages.get(i));
 				insertPage(t);
-				updateMinKey(pages.get(i)); updateMaxKey(pages.get(i));
+				updateMinKey(pages.get(i));
+				updateMaxKey(pages.get(i));
 				Write(pages.get(i));
 			}
 		}
-		if(!found) {
-			//insert into last possible page and copy and remove one row
-			Read(pages.get(pages.size()-1));
+		if (!found) {
+			// insert into last possible page and copy and remove one row
+			Read(pages.get(pages.size() - 1));
 			insertPage(t);
 			Tuple temp = page.lastElement();
 			page.remove(page.lastElement());
-			updateMinKey(pages.get(pages.size()-1)); updateMaxKey(pages.get(pages.size()-1));
-			Write(pages.get(pages.size()-1));
-			
-			String next = getNextPage(pages.get(pages.size()-1)); //what if arraylist is not sorted by minkey?
-			
-			if(next==null) {//no next page
+			updateMinKey(pages.get(pages.size() - 1));
+			updateMaxKey(pages.get(pages.size() - 1));
+			Write(pages.get(pages.size() - 1));
+
+			String next = getNextPage(pages.get(pages.size() - 1)); // what if arraylist is not sorted by minkey?
+
+			if (next == null) {// no next page
 				String file1 = addPage(); // adding the info in the hashtable
-				 pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue() , t.getKeyValue()});
-				  page.add(t); // only add to vector 
-				  Write(file1); // write to new file
-			}else {
-				if(!isPageFull(next)) { //shifting can be done
+				pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue(), t.getKeyValue() });
+				page.add(t); // only add to vector
+				Write(file1); // write to new file
+			} else {
+				if (!isPageFull(next)) { // shifting can be done
 					Read(next);
 					insertPage(t);
-					updateMinKey(next); updateMaxKey(next);
+					updateMinKey(next);
+					updateMaxKey(next);
 					Write(next);
-				}else { //next is full
+				} else { // next is full
 					page.clear();
 					Read(next);
 					insertPage(temp);
 					Tuple temp2 = page.lastElement();
 					page.remove(page.lastElement());
-					updateMinKey(next); updateMaxKey(next);
+					updateMinKey(next);
+					updateMaxKey(next);
 					Write(next);
 					insert(temp2);
 				}
-				
-				
-				
-				
+
 			}
-						
+
 		}
 	}
-	
 
-	
 	public boolean isPageFull(String filename) {
-		int noOfRows =(int) pageInfo.get(filename)[0];
-		if (maxRows-noOfRows>0) {
+		int noOfRows = (int) pageInfo.get(filename)[0];
+		if (maxRows - noOfRows > 0) {
 			return false;
-		}else
-		return true;
+		} else
+			return true;
 	}
-	
-	
+
 	public void insertPage(Tuple t) {
 
 		if (this.page.size() > 0) {
@@ -282,43 +281,25 @@ public class Table implements Serializable {
 
 	public void delete(Tuple t) {
 		page.clear();
-		// putting the set of file names into an Array
-		/*
-		 * String[] tmp = (String[]) pageInfo.keySet().toArray(); String[] keyArr = new
-		 * String[tmp.length]; int i; for (i = 0; i < tmp.length; i++) keyArr[i] =
-		 * (String) tmp[i]; // copy file names into keyArr Arrays.sort(keyArr); //
-		 * needless but can be kept for (i = 0; i < keyArr.length; i++) { Comparable
-		 * minIndex = pageInfo.get(keyArr[i])[1]; if
-		 * (t.getKeyValue().compareTo(minIndex) < 0) // compare to min index of each
-		 * page break; // stop at page wanted (first page where entry key is greater) }
-		 * if (i != 0) i--;
-		 */
-		ArrayList<String> pages=findPages(t);
-		for(String fileName: pages)
-		{
-			deleteFromPage(fileName,t);
+		for (String file : pageInfo.keySet()) {
+			deleteFromPage(file, t);
 		}
-		//deleteFromPage(keyArr[i], t);
-		//Comparable minKey = pageInfo.get(keyArr[i])[1];
-		//if we have pages with similar keys
-		//while(i>=0 && pageInfo.get(keyArr[i])[1].compareTo(minKey)==0 && minKey.compareTo(t.getKeyValue())==0) {
-		//	deleteFromPage(keyArr[i], t);
-		//	i--;
-		
 
 	}
-/**
- * 
- * @param fileName name of the file to delete t tuple from
- * @param t tuple to be deleted
- */
+
+	/**
+	 * 
+	 * @param fileName name of the file to delete t tuple from
+	 * @param t        tuple to be deleted
+	 */
 	public void deleteFromPage(String fileName, Tuple t) {
 		page.clear();
 		Read(fileName);
+		int i = 0;
 		for (Tuple t1 : page) {
-			if (t1.compareTo(t) == 0) {
+			if (t1.helperDelete(t.getAttributes())) {
 				page.remove(t1);
-				break;
+				i++;
 			}
 		}
 		if (page.size() == 0) {
@@ -326,8 +307,9 @@ public class Table implements Serializable {
 		} else {
 			Comparable[] currentPageInfo = pageInfo.get(fileName);
 			int currentNoOfPages = (int) currentPageInfo[0];
-			pageInfo.replace(fileName, new Comparable[] { --currentNoOfPages, updateMinKey(fileName),updateMaxKey(fileName) });
-			
+			pageInfo.replace(fileName,
+					new Comparable[] { (currentNoOfPages - i), updateMinKey(fileName), updateMaxKey(fileName) });
+
 		}
 		Write(fileName);
 		page.clear();
@@ -340,7 +322,8 @@ public class Table implements Serializable {
 	public String returnClusteredKey() {
 		return this.clusteredKey;
 	}
-public String getTableName() {
+
+	public String getTableName() {
 		return tableName;
 	}
 
@@ -360,9 +343,8 @@ public String getTableName() {
 		return indexedCoulmns;
 	}
 
-	//TODO change signature to Tuple t instead of Hashtable
-	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException{
+	// TODO change signature to Tuple t instead of Hashtable
+	public void updateTable(String strClusteringKey, Hashtable<String, Object> htblColNameValue) throws DBAppException {
 
 		Object[] tmp = pageInfo.keySet().toArray();
 		Comparable[] keyArr = new Comparable[tmp.length];
@@ -395,14 +377,14 @@ public String getTableName() {
 	// updates the min key of the page in the page vector
 	/**
 	 * 
-	 * @param fileName 
+	 * @param fileName
 	 * @return updated minimum key of fileName
 	 */
 	public Comparable updateMinKey(String fileName) {
 		return page.firstElement().getKeyValue();
-		
 
 	}
+
 	/**
 	 * 
 	 * @param fileName
@@ -410,9 +392,8 @@ public String getTableName() {
 	 */
 	public Comparable updateMaxKey(String fileName) {
 		return page.lastElement().getKeyValue();
-		
+
 	}
-	
 
 	public void deletePage(String fileName) {
 		File file = new File(fileName);
