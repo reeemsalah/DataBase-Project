@@ -70,7 +70,7 @@ public class Table implements Serializable {
 	 */
 	public String addPage() {
 		String filename = tableName + "_" + (++numOfPages);
-
+System.out.println("pagecount " + numOfPages);
 		File file = new File(filename + ".ser");
 		try {
 			file.createNewFile();
@@ -100,12 +100,13 @@ public class Table implements Serializable {
 	}
 
 	public void Write(String filename) {
-		 
+		System.out.println("WRITE: "+page);
+
 		// Serialization
 		
 		try {
 			// Saving of object in a file
-			FileOutputStream file1 = new FileOutputStream(filename+".ser" ); // overwrites file?
+			FileOutputStream file1 = new FileOutputStream(filename+".ser"); // overwrites file?
 			ObjectOutputStream out = new ObjectOutputStream(file1);
 			
 			// Method for serialization of object
@@ -132,15 +133,27 @@ public class Table implements Serializable {
 }
 
 	public void Read(String filename) {
+//		System.out.println( " reading1!!!!!!!!!!"  );
+
 		try {
 			//ObjectInputStream o = new ObjectInputStream(new FileInputStream(filename ));
 			FileInputStream fi = new FileInputStream((filename+".ser"));
-			
+//			System.out.println( " reading2!!!!!!!!!!"  );
+
 			try{ObjectInputStream o = new ObjectInputStream(fi);
-			while(o.readObject()!=null) {
+
+//			while(o.readObject()!=null) {
+//				System.out.println( " reading3!!!!!!!!!!"  );
+
 				o.read();
-				System.out.println(o.readObject() + " reading" +o.readObject().getClass().getCanonicalName() );
-				page.add((Tuple)o.readObject());
+//				System.out.println( " reading4!!!!!!!!!!"  );
+
+//				System.out.println(o.readObject() + " reading" +o.readObject().getClass().getCanonicalName() );
+//				System.out.println( " reading5!!!!!!!!!!"  );
+
+//				page.add((Tuple)o.readObject());
+				page= (Vector<Tuple>)o.readObject();
+
 //				System.out.println(tableName);
 //				System.out.println(columnNames);
 //				System.out.println(columnTypes);
@@ -148,20 +161,23 @@ public class Table implements Serializable {
 //				System.out.println(indexedCoulmns);
 //				System.out.println(clusteredKey);
 //				System.out.println(maxRows);
+//				System.out.println( " reading6!!!!!!!!!!"  );
+
+//				break;
+
 				
-				break;
-				
-				
-			}
+//			}
 			o.close();
 			fi.close();
 			}catch(EOFException e) {
+				
 				System.out.println("end of file ");
 //				page = new Vector<Tuple>();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println("READ: "+page);
 
 			
 			
@@ -183,7 +199,14 @@ public class Table implements Serializable {
 		// String[] tmp = (String[]) pageInfo.entrySet()
 		Comparable currKey = pageInfo.get(currFile)[2];
 
-		String[] tmp = (String[]) pageInfo.keySet().toArray();
+//		String[] tmp = (String[]) pageInfo.keySet().toArray();
+		Object[] tmpObj =  (pageInfo.keySet().toArray());
+		String[] tmp = new String[tmpObj.length];
+		int j=0;
+		for(Object name: tmpObj) {
+			tmp[j]=(String) name;
+			j++;
+		}
 		String[] keyArr = new String[tmp.length];
 		int i;
 		for (i = 0; i < tmp.length; i++)
@@ -192,7 +215,7 @@ public class Table implements Serializable {
 		boolean found = false;
 		for (i = 0; i < keyArr.length; i++) {
 			Comparable maxIndex = pageInfo.get(keyArr[i])[2];
-			if (currKey.compareTo(maxIndex) <= 0) // compare to min index of each page
+			if (currKey.compareTo(maxIndex) <= 0 && keyArr[i]!=currFile) // compare to min index of each page
 				found = true;
 			break; // stop at page wanted (first page where entry key is greater)
 		}
@@ -253,7 +276,10 @@ public class Table implements Serializable {
 		int i = 0;
 		for (String name : allFiles) {
 			allMin[i] = (Comparable) pageInfo.get(name)[1];
+			System.out.println(allMin[i] + ", ");
 			allMax[i] = (Comparable) pageInfo.get(name)[2];
+			System.out.println(allMax[i] + ", ");
+			i++;
 		}
 		Arrays.sort(allMin);
 		Arrays.sort(allMax);
@@ -277,7 +303,7 @@ System.out.println("options are empty" + options);
 
 					for (int j = 0; j < allFiles.length; j++) {
 						if (pageInfo.get(allFiles[j])[1] == allMin[0]) {
-							options.add(allFiles[i]);
+							options.add(allFiles[j]);
 							System.out.println("small 2" + options);
 
 						}
@@ -291,13 +317,13 @@ System.out.println("options are empty" + options);
 						System.out.println("big 1" + options);
 
 						for (int j = 0; j < allFiles.length; j++) {
-							if (pageInfo.get(allFiles[j])[1] == allMax[allMax.length - 1]) {
-								System.out.println("big 1" + allFiles[j]);
-								options.add(allFiles[i]);
-								System.out.println("big 2" + options);
-
+							if (pageInfo.get(allFiles[j])[2] == allMax[allMax.length - 1]) {
+								System.out.println("big 2" + allFiles[j]);
+								options.add(allFiles[j]);
+								System.out.println("big 3" + options);
+//fix me
 							}
-							System.out.println("big 3" + options);
+							System.out.println("big 4" + options);
 
 						}
 					}
@@ -313,13 +339,17 @@ System.out.println("options are empty" + options);
 		boolean found = false;
 		for (int i = 0; i < pages.size(); i++) {
 			if (!isPageFull(pages.get(i))) {
+			
 				found = true;
-				System.out.println( "inserting to : " + pages.get(i));
+				System.out.println( "inserting to : " + pages.get(i)+ "!!!!!!!!!!!!!");
 				Read(pages.get(i));
 				insertPage(t);
-				updateMinKey(pages.get(i));
-				updateMaxKey(pages.get(i));
+//				updateMinKey(pages.get(i));
+//				updateMaxKey(pages.get(i));
+//				updatenoOfRows(pages.get(i));
+				updatePageInfo(pages.get(i));
 				Write(pages.get(i));
+				return;
 			}
 		}
 		if (!found) {
@@ -331,33 +361,46 @@ System.out.println("options are empty" + options);
 			System.out.println(page);
 			Tuple temp = page.lastElement();
 			page.remove(page.lastElement());
-			updateMinKey(pages.get(pages.size() - 1));
-			updateMaxKey(pages.get(pages.size() - 1));
+//			updateMinKey(pages.get(pages.size() - 1));
+//			updateMaxKey(pages.get(pages.size() - 1));
+//			updatenoOfRows(pages.get(pages.size() - 1));
+			updatePageInfo(pages.get(pages.size() - 1));
 			Write(pages.get(pages.size() - 1));
 
 			String next = getNextPage(pages.get(pages.size() - 1)); // what if arraylist is not sorted by minkey?
 
 			if (next == null) {// no next page
+				page.clear();
+				System.out.println("NO NEXT!!!!!!!!!!!!!!!");
 				String file1 = addPage(); // adding the info in the hashtable
 				pageInfo.put(file1, new Comparable[] { 1, t.getKeyValue(), t.getKeyValue() });
-				page.add(t); // only add to vector
+			page.add(temp);
+//				page.add(t); // only add to vector
 				Write(file1); // write to new file
+				return;
 			} else {
 				if (!isPageFull(next)) { // shifting can be done
+					page.clear();
 					Read(next);
-					insertPage(t);
+					insertPage(temp);
 					updateMinKey(next);
 					updateMaxKey(next);
+					updatenoOfRows(next);
+					updatePageInfo(next);
 					Write(next);
+					return;
 				} else { // next is full
 					page.clear();
 					Read(next);
 					insertPage(temp);
 					Tuple temp2 = page.lastElement();
 					page.remove(page.lastElement());
-					updateMinKey(next);
-					updateMaxKey(next);
+//					updateMinKey(next);
+//					updateMaxKey(next);
+//					updatenoOfRows(next);
+					updatePageInfo(next);
 					Write(next);
+					System.out.println("RECURSIVE!!!!!!!!!!!");
 					insert(temp2);
 				}
 
@@ -387,6 +430,7 @@ System.out.println("options are empty" + options);
 				if (tmp.compareTo(t) < 0) {
 					this.page.insertElementAt(t, i + 1);
 					inserted = true;
+					
 //				 this.rows.add(t);
 
 				}
@@ -553,7 +597,19 @@ System.out.println("options are empty" + options);
 		return page.lastElement().getKeyValue();
 
 	}
+	public Comparable updatenoOfRows(String fileName) {
+		return page.size();
 
+	}
+public void updatePageInfo(String fileName) {
+	
+	Comparable noOfRows=updatenoOfRows(fileName);
+	Comparable min=updateMinKey(fileName);
+	Comparable max=updateMaxKey(fileName);
+
+	pageInfo.replace(fileName,	new Comparable[] { (noOfRows), min, max });
+}
+	
 	public void deletePage(String fileName) {
 		File file = new File(fileName);
 		file.delete();
