@@ -68,7 +68,8 @@ public class DBApp {
 			indexed.add(false);
 
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
-					maxRows);
+					2);
+			// fix maxRows
 			tables.put(strTableName, t);
 			insertIntoMetaData(t, true);
 
@@ -80,11 +81,18 @@ public class DBApp {
 		boolean flag = false;
 		
 		java.util.Date date=new java.util.Date();  
-		System.out.println(date);
+//		System.out.println(date);
 		htblColNameValue.put("TouchDate",date ); 
 		
 		
-		String[] tableNames = (String[]) (tables.keySet().toArray());
+		Object[] tableNamesObj =  (tables.keySet().toArray());
+		String[] tableNames = new String[tableNamesObj.length];
+		int j=0;
+		for(Object name: tableNamesObj) {
+			tableNames[j]=(String) name;
+			j++;
+		}
+		
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
 				flag = true;

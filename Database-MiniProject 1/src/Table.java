@@ -1,5 +1,6 @@
 import java.awt.Polygon;
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,7 +40,7 @@ public class Table implements Serializable {
 	// noOfRows
 	// array of comparables at index 1 hoe el minKey fel page
 	private Hashtable<String, Comparable[]> pageInfo = new Hashtable<String, Comparable[]>();
-	private Vector<Tuple> page;
+	private Vector<Tuple> page=new Vector<Tuple>();
 
 
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
@@ -51,9 +52,39 @@ public class Table implements Serializable {
 		this.indexedCoulmns = indexed;
 		this.clusteredKey = clusteredKey;
 		Table.maxRows = maxRows;
+		String firstFile = addPage();
+		Comparable [] info = new Comparable[3];
+		info[0]=0;
+		info[1]=-1;
+		info[2]=-1;
+		pageInfo.put(firstFile, info);	
+		
 	}
 
 	// to find the pages
+	
+
+	/**
+	 * 
+	 * @return the new file for the newly created page
+	 */
+	public String addPage() {
+		String filename = tableName + "_" + (++numOfPages);
+
+		File file = new File(filename + ".ser");
+		try {
+			file.createNewFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		Comparable [] info = new Comparable[3];
+//		info[0]=0;
+////		info[1]=null;
+////		info[2]=null;
+//		pageInfo.put(filename, info);
+		return filename;
+	}
+	
 	public ArrayList<String> findPages(Tuple t) {
 		Comparable tKey = t.getKeyValue();
 		ArrayList<String> pages = new ArrayList<String>();
@@ -68,20 +99,6 @@ public class Table implements Serializable {
 
 	}
 
-	/**
-	 * 
-	 * @return the new file for the newly created page
-	 */
-	public String addPage() {
-		File file = new File(tableName + "_" + (++numOfPages) + ".ser");
-		try {
-			file.createNewFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return tableName + "_" + (++numOfPages) + ".ser";
-	}
-
 	public void Write(String filename) {
 		 
 		// Serialization
@@ -92,13 +109,15 @@ public class Table implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(file1);
 			
 			// Method for serialization of object
-			out.writeObject(tableName);
-			out.writeObject(columnNames);
-			out.writeObject(columnTypes);
-			out.writeObject(clusteredCoulmns);
-			out.writeObject(indexedCoulmns);
-			out.writeObject(clusteredKey);
-			out.writeObject(maxRows);
+//			out.writeObject(tableName);
+//			out.writeObject(columnNames);
+//			out.writeObject(columnTypes);
+//			out.writeObject(clusteredCoulmns);
+//			out.writeObject(indexedCoulmns);
+//			out.writeObject(clusteredKey);
+//			out.writeObject(maxRows);
+			
+			out.writeObject(page);
 
 
 
@@ -116,19 +135,19 @@ public class Table implements Serializable {
 		try {
 			//ObjectInputStream o = new ObjectInputStream(new FileInputStream(filename ));
 			FileInputStream fi = new FileInputStream((filename+".ser"));
-			ObjectInputStream o = new ObjectInputStream(fi);
-
-
 			
-			while(o!=null) {
+			try{ObjectInputStream o = new ObjectInputStream(fi);
+			while(o.readObject()!=null) {
 				o.read();
-				System.out.println(tableName);
-				System.out.println(columnNames);
-				System.out.println(columnTypes);
-				System.out.println(clusteredCoulmns);
-				System.out.println(indexedCoulmns);
-				System.out.println(clusteredKey);
-				System.out.println(maxRows);
+				System.out.println(o.readObject() + " reading" +o.readObject().getClass().getCanonicalName() );
+				page.add((Tuple)o.readObject());
+//				System.out.println(tableName);
+//				System.out.println(columnNames);
+//				System.out.println(columnTypes);
+//				System.out.println(clusteredCoulmns);
+//				System.out.println(indexedCoulmns);
+//				System.out.println(clusteredKey);
+//				System.out.println(maxRows);
 				
 				break;
 				
@@ -136,6 +155,16 @@ public class Table implements Serializable {
 			}
 			o.close();
 			fi.close();
+			}catch(EOFException e) {
+				System.out.println("end of file ");
+//				page = new Vector<Tuple>();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
+			
 			
 
 			} catch (FileNotFoundException e) {
@@ -178,7 +207,15 @@ public class Table implements Serializable {
 	public boolean checkInsert(Tuple t) throws DBAppException{
 		Hashtable<String, String>  tableData = readTableMetadata();
 	
-	 String[] colNames = (String[]) tableData.keySet().toArray();
+//	 String[] colNames = (String[]) tableData.keySet().toArray();
+	 Object[] colNamesObj =  (tableData.keySet().toArray());
+		String[] colNames = new String[colNamesObj.length];
+		int j=0;
+		for(Object name: colNamesObj) {
+			colNames[j]=(String) name;
+			j++;
+		}
+		
 	  
 	 for(String col: colNames) {
 		 if(!(tableData.get(col).toLowerCase()).equals((t.getAttributes().get(col)).getClass().getCanonicalName().toLowerCase())) {
@@ -190,6 +227,7 @@ public class Table implements Serializable {
 	
 
 	public void insert(Tuple t) {
+		if (page!=null)
 		page.clear();
 		try {
 			checkInsert(t);
@@ -197,7 +235,19 @@ public class Table implements Serializable {
 			
 			e.printStackTrace();
 		}
-		String[] allFiles = (String[]) pageInfo.keySet().toArray();
+		Object[] allFilesObj =  pageInfo.keySet().toArray();
+		System.out.println("allFiles length "+ allFilesObj.length);
+
+//		String [] allFiles = intoArray(allFilesObj);
+		String[] allFiles = new String[allFilesObj.length];
+		int f=0;
+		for(Object name: allFilesObj) {
+			allFiles[f]=(String) name;
+			f++;
+		}
+		
+		System.out.println("allFiles length "+ allFiles.length);
+
 		Comparable[] allMin = new Comparable[allFiles.length];
 		Comparable[] allMax = new Comparable[allFiles.length];
 		int i = 0;
@@ -208,26 +258,47 @@ public class Table implements Serializable {
 		Arrays.sort(allMin);
 		Arrays.sort(allMax);
 
-		ArrayList<String> options = findPages(t);
-		if (options.size() == 0) {
 
+		ArrayList<String> options = findPages(t);
+		if (options.size() == 0 ) {
+System.out.println("options are empty" + options);
 			if (pageInfo.isEmpty()) {
+				System.out.println("options are empty3" + options);
+
 				options.add(addPage());
+				System.out.println("options are empty2" + options);
+
+				System.out.println("table has no pages");
+
 			} else {
 				if (t.getKeyValue().compareTo(allMin[0]) < 0) // smaller than smallest key
 				{
+					System.out.println("small 1" + options);
+
 					for (int j = 0; j < allFiles.length; j++) {
 						if (pageInfo.get(allFiles[j])[1] == allMin[0]) {
 							options.add(allFiles[i]);
+							System.out.println("small 2" + options);
+
 						}
+						System.out.println("small 3" + options);
+
 					}
 				} else // larger than largest key
-				{
+				{					System.out.println("big 0" + options);
+
 					if (t.getKeyValue().compareTo(allMax[allMax.length - 1]) > 0) {
+						System.out.println("big 1" + options);
+
 						for (int j = 0; j < allFiles.length; j++) {
 							if (pageInfo.get(allFiles[j])[1] == allMax[allMax.length - 1]) {
+								System.out.println("big 1" + allFiles[j]);
 								options.add(allFiles[i]);
+								System.out.println("big 2" + options);
+
 							}
+							System.out.println("big 3" + options);
+
 						}
 					}
 				}
@@ -243,6 +314,7 @@ public class Table implements Serializable {
 		for (int i = 0; i < pages.size(); i++) {
 			if (!isPageFull(pages.get(i))) {
 				found = true;
+				System.out.println( "inserting to : " + pages.get(i));
 				Read(pages.get(i));
 				insertPage(t);
 				updateMinKey(pages.get(i));
@@ -252,8 +324,11 @@ public class Table implements Serializable {
 		}
 		if (!found) {
 			// insert into last possible page and copy and remove one row
+			System.out.println(pages.get(pages.size() - 1));
 			Read(pages.get(pages.size() - 1));
+			System.out.println(page);
 			insertPage(t);
+			System.out.println(page);
 			Tuple temp = page.lastElement();
 			page.remove(page.lastElement());
 			updateMinKey(pages.get(pages.size() - 1));
@@ -293,6 +368,7 @@ public class Table implements Serializable {
 
 	public boolean isPageFull(String filename) {
 		int noOfRows = (int) pageInfo.get(filename)[0];
+		System.out.println("page rows: "+noOfRows+"maxRows: "+maxRows);
 		if (maxRows - noOfRows > 0) {
 			return false;
 		} else
@@ -517,24 +593,37 @@ public class Table implements Serializable {
 		return res;
 	}
 
-	public static void main(String[] args) {
-    	ArrayList<String> columns = new ArrayList<String>();
-		columns.add("id");
-		columns.add("name");
-		ArrayList<String> types = new ArrayList<String>();
-		types.add("boolean");
-		types.add("integer");
-		ArrayList<Boolean> indexed = new ArrayList<Boolean>();
-		indexed.add(false);
-		indexed.add(false);
-		ArrayList<Boolean> clustered = new ArrayList<Boolean>();
-		clustered.add(true);
-		clustered.add(false);
+	public String[] intoArray(Object[] h) {
 		
-		Table t= new Table("Student", columns, types, indexed,clustered , "id", 10);
-//		Read("file.ser");
-		t.Write("tablefile");
-		t.Read("tablefile");
+		String[] Names = new String[h.length];
+		int j=0;
+		for(Object name: h) {
+			Names[j]=(String) name;
+			j++;
+		}
+		
+		return null;
+		
+	}
+	
+	public static void main(String[] args) {
+//    	ArrayList<String> columns = new ArrayList<String>();
+//		columns.add("id");
+//		columns.add("name");
+//		ArrayList<String> types = new ArrayList<String>();
+//		types.add("boolean");
+//		types.add("integer");
+//		ArrayList<Boolean> indexed = new ArrayList<Boolean>();
+//		indexed.add(false);
+//		indexed.add(false);
+//		ArrayList<Boolean> clustered = new ArrayList<Boolean>();
+//		clustered.add(true);
+//		clustered.add(false);
+//		
+//		Table t= new Table("Student", columns, types, indexed,clustered , "id", 10);
+////		Read("file.ser");
+//		t.Write("tablefile");
+//		t.Read("tablefile");
 	}
 
 }
