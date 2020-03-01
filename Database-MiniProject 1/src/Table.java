@@ -326,11 +326,23 @@ public class Table implements Serializable {
 		}
 	}
 
-	public void delete(Tuple t) {
+	public void delete(Tuple t) throws DBAppException {
 		page.clear();
-		for (String file : pageInfo.keySet()) {
+		
+		Hashtable <String , String > temp=readTableMetadata(); 
+		for (String col : t.getAttributes().keySet()) {
+			if(temp.keySet().contains(col))
+				throw new DBAppException("metadata file Error");
+			if(t.getValueOfColumn(col).getClass().toString().equals("class "+temp.get(col)))
+				throw new DBAppException("Incompatable types");
+		}
+		for(String file :pageInfo.keySet())
+		{
 			deleteFromPage(file, t);
 		}
+		
+	
+
 
 	}
 

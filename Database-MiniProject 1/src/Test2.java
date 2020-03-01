@@ -17,7 +17,8 @@ public class Test2 {
 		test.remove("hi");
 		test.remove("hello");
 		System.out.println(test.size());
-			
+		String s="hi";
+		System.out.println(s.getClass().toString().equals("class java.lang.String"));
 	}
 
 }
