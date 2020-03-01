@@ -105,7 +105,7 @@ public class DBApp {
 		}
 	}
 
-	// TODO Uncomment when updateTable is changed
+
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException {

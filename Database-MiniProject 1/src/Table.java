@@ -25,10 +25,9 @@ import javax.naming.ldap.SortControl;
 
 @SuppressWarnings("serial")
 public class Table implements Serializable {
-	// TODO values of the inserts needs to be added
 	private static int maxRows;
 	private String tableName;
-	private Vector<Page> tablePages;
+	//private Vector<Page> tablePages;
 	private ArrayList<String> columnNames;
 	private ArrayList<String> columnTypes;
 	private ArrayList<Boolean> clusteredCoulmns;
@@ -42,7 +41,7 @@ public class Table implements Serializable {
 	private Hashtable<String, Comparable[]> pageInfo = new Hashtable<String, Comparable[]>();
 	private Vector<Tuple> page;
 
-	// TODO add TouchDate column
+
 	public Table(String tableName, ArrayList<String> columnNames, ArrayList<String> columnTypes,
 			ArrayList<Boolean> clustered, ArrayList<Boolean> indexed, String clusteredKey, int maxRows) {
 		this.tableName = tableName;
@@ -195,7 +194,7 @@ public class Table implements Serializable {
 		try {
 			checkInsert(t);
 		} catch (DBAppException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		String[] allFiles = (String[]) pageInfo.keySet().toArray();
@@ -431,12 +430,13 @@ public class Table implements Serializable {
 		return colInfo;
 	}
 
-	// TODO change signature to Tuple t instead of Hashtable
+	
 	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
 		ArrayList<String> pages = findPages(t);
 		for (String fileName : pages) {
 			Read(fileName);
 			for (Tuple t1 : page) {
+				//TODO fix this error
 				String[] contents = readTableMetadata();
 				// String colname=contents[1];
 				String coltype = contents[2];

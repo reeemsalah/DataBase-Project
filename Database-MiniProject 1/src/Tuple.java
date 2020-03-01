@@ -50,7 +50,6 @@ public class Tuple implements Serializable, Comparable {
 	 */
 	@Override
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		Tuple o1 = (Tuple) o;
 		@SuppressWarnings("rawtypes")
 		Comparable id2 = o1.getKeyValue();
