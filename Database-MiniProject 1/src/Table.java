@@ -433,25 +433,28 @@ public class Table implements Serializable {
 	
 	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
 		ArrayList<String> pages = findPages(t);
+		Hashtable<String, String> contents = readTableMetadata();
 		for (String fileName : pages) {
 			Read(fileName);
+			
 			for (Tuple t1 : page) {
 				//TODO fix this error
-				String[] contents = readTableMetadata();
-				// String colname=contents[1];
-				String coltype = contents[2];
-
+				
+				String coltype = contents.get(t1.getKey());
+				
 				if (coltype.equals(t.getClass().getCanonicalName())) {
-					for (String key : t.getAttributes().keySet())
+					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
+					Date currentdate = new Date();
+
+					t1.edit("TouchDate", currentdate);
 				}
 
-				Date currentdate = new Date();
-
-				t1.edit("TouchDate", currentdate);
+				
 			}
 		}
 
+	}
 	}
 
 	// updates the min key of the page in the page vector
