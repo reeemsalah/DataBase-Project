@@ -451,9 +451,9 @@ System.out.println("options are empty" + options);
 		
 		Hashtable <String , String > temp=readTableMetadata(); 
 		for (String col : t.getAttributes().keySet()) {
-			if(temp.keySet().contains(col))
+			if(!temp.keySet().contains(col))
 				throw new DBAppException("metadata file Error");
-			if(t.getValueOfColumn(col).getClass().toString().equals("class "+temp.get(col)))
+			if(!t.getValueOfColumn(col).getClass().toString().equals("class "+temp.get(col)))
 				throw new DBAppException("Incompatable types");
 		}
 		for(String file :pageInfo.keySet())
@@ -566,15 +566,17 @@ System.out.println("options are empty" + options);
 	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
 		ArrayList<String> pages = findPages(t);
 		Hashtable<String, String> contents = readTableMetadata();
+		System.out.println("I am here method");
 		for (String fileName : pages) {
 			Read(fileName);
-			
+			System.out.println("I am here for loop 1");
 			for (Tuple t1 : page) {
 				//TODO fix this error
-				
+				System.out.println("I am here for loop 2");
 				String coltype = contents.get(t1.getKey());
 				
-				if (coltype.equals(t.getClass().getCanonicalName())) {
+				if (("class "+coltype).equals(t.getClass().toString())) {
+				System.out.println("I am here if condition for col type");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
 					Date currentdate = new Date();

@@ -28,12 +28,18 @@ public class DBApp {
 	public void createTable(String strTableName, String strClusteringKeyColumn,
 			Hashtable<String, String> htblColNameType) throws DBAppException {
 		boolean flag = false;
-
+		// System.out.println("here1");
 		if (tables.size() != 0) {
-			String[] tableNames = (String[]) (tables.keySet().toArray());
+			Object[] tmp = tables.keySet().toArray();
+			String[] tableNames = new String[tmp.length];
+			for (int i = 0; i < tmp.length; i++) {
+				tableNames[i] = (String) tmp[i];
+			}
 
+			// System.out.println("here2");
 			for (int i = 0; i < tableNames.length; i++) {
 				if (tableNames[i].equals(strTableName)) {
+					// System.out.println(tableNames[i]);
 					flag = true;
 					break;
 				}
@@ -42,6 +48,7 @@ public class DBApp {
 		if (flag == true) {
 			throw new DBAppException("This table already exists");
 		} else {
+			// System.out.println("here3");
 			ArrayList<String> columnNames = new ArrayList<String>();
 			ArrayList<String> columnTypes = new ArrayList<String>();
 			Set<String> names = htblColNameType.keySet();
@@ -67,9 +74,9 @@ public class DBApp {
 			}
 			indexed.add(false);
 
-			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,
-					2);
+			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn, 2);
 			// fix maxRows
+			// System.out.println("here4");
 			tables.put(strTableName, t);
 			insertIntoMetaData(t, true);
 
@@ -79,20 +86,19 @@ public class DBApp {
 
 	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
 		boolean flag = false;
-		
-		java.util.Date date=new java.util.Date();  
+
+		java.util.Date date = new java.util.Date();
 //		System.out.println(date);
-		htblColNameValue.put("TouchDate",date ); 
-		
-		
-		Object[] tableNamesObj =  (tables.keySet().toArray());
+		htblColNameValue.put("TouchDate", date);
+
+		Object[] tableNamesObj = (tables.keySet().toArray());
 		String[] tableNames = new String[tableNamesObj.length];
-		int j=0;
-		for(Object name: tableNamesObj) {
-			tableNames[j]=(String) name;
+		int j = 0;
+		for (Object name : tableNamesObj) {
+			tableNames[j] = (String) name;
 			j++;
 		}
-		
+
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
 				flag = true;
@@ -113,13 +119,17 @@ public class DBApp {
 		}
 	}
 
-
-
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException {
 
 		boolean flag = false;
-		String[] tableNames = (String[]) (tables.keySet().toArray());
+		Object[] tableNamesObj = (tables.keySet().toArray());
+		String[] tableNames = new String[tableNamesObj.length];
+		int j = 0;
+		for (Object name : tableNamesObj) {
+			tableNames[j] = (String) name;
+			j++;
+		}
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
 				flag = true;
@@ -129,7 +139,7 @@ public class DBApp {
 		if (!flag) {
 			throw new DBAppException("This table doens't exist");
 		} else {
-
+			System.out.println("AY 7AGA");
 			Hashtable<String, Comparable> tempHash = new Hashtable<String, Comparable>();
 			Set<String> keys = htblColNameValue.keySet();
 			for (String key : keys) {
@@ -144,7 +154,13 @@ public class DBApp {
 	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
 
 		boolean flag = false;
-		String[] tableNames = (String[]) (tables.keySet().toArray());
+		Object[] tableNamesObj = (tables.keySet().toArray());
+		String[] tableNames = new String[tableNamesObj.length];
+		int j = 0;
+		for (Object name : tableNamesObj) {
+			tableNames[j] = (String) name;
+			j++;
+		}
 		for (int i = 0; i < tableNames.length; i++) {
 			if (tableNames[i].equals(strTableName)) {
 				flag = true;
@@ -210,7 +226,6 @@ public class DBApp {
 	}
 
 	public static void main(String[] args) {
-
 		String strTableName = "Student";
 		DBApp dbApp = new DBApp();
 		Hashtable htblColNameType = new Hashtable();
@@ -219,8 +234,22 @@ public class DBApp {
 		htblColNameType.put("gpa", "java.lang.double");
 		try {
 			dbApp.createTable(strTableName, "id", htblColNameType);
+			Hashtable htblColNameValue = new Hashtable();
+			htblColNameValue.put("id", new Integer(1));
+			htblColNameValue.put("name", new String("Ahmed Noor"));
+			htblColNameValue.put("gpa", new Double(0.95));
+			dbApp.insertIntoTable(strTableName, htblColNameValue);
+			htblColNameValue.clear();
+			htblColNameValue.put("id", new Integer(2));
+			htblColNameValue.put("name", new String("Ahmed Noor"));
+			htblColNameValue.put("gpa", new Double(0.95));
+			dbApp.insertIntoTable(strTableName, htblColNameValue);
+			htblColNameValue.clear();
+			htblColNameValue.put("name", new String("Ahmed"));
+			dbApp.updateTable(strTableName, "1", htblColNameValue);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
+
 	}
 }
