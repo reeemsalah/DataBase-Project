@@ -227,6 +227,7 @@ System.out.println("pagecount " + numOfPages);
 
 	}
 	
+	
 	public boolean checkInsert(Tuple t) throws DBAppException{
 		Hashtable<String, String>  tableData = readTableMetadata();
 	
@@ -239,6 +240,11 @@ System.out.println("pagecount " + numOfPages);
 			j++;
 		}
 		
+		if(colNames.length!=tableData.keySet().size()) {
+			 throw new DBAppException("please enter all fields");
+
+		}
+		
 	  
 	 for(String col: colNames) {
 		 if(!(tableData.get(col).toLowerCase()).equals((t.getAttributes().get(col)).getClass().getCanonicalName().toLowerCase())) {
@@ -248,6 +254,7 @@ System.out.println("pagecount " + numOfPages);
 	 return true;
   }
 	
+
 
 	public void insert(Tuple t) {
 		if (page!=null)
@@ -283,9 +290,90 @@ System.out.println("pagecount " + numOfPages);
 		}
 		Arrays.sort(allMin);
 		Arrays.sort(allMax);
+		ArrayList<String> options= new ArrayList<String>() ;
+		
+//for(Comparable opt: allMin) {
+//	if(t.getKeyValue().compareTo(opt)>=0) {
+//		for(String fil:allFiles) {
+//			if(pageInfo.get(fil)[1].compareTo(opt)==0)
+//			options.add(fil);
+//		}
+//	}
+//		
+//}
+//for(Comparable opt: allMax) {
+//	if(t.getKeyValue().compareTo(opt)>=0) {
+//		for(String fil:allFiles) {
+//			if(pageInfo.get(fil)[2].compareTo(opt)==0)
+//			options.add(fil);
+//		}
+//	}
+//		
+		Arrays.sort(allFiles);
+	
+		Comparable [] bounds = new Comparable[allMin.length + allMax.length];
+		for(int l=0;l<bounds.length-1;l+=2) {
+			bounds[l]=allMin[l/2];
+			bounds[l+1]=allMax[l/2];
+		}
+		
+//		if (bounds[0].compareTo(t.getKeyValue()) >= 0) {
+//			options.add();
+//			System.out.println("smol ");
+//		}
+		
+		if(t.getKeyValue().compareTo(bounds[0])<=0) {
+			for(String e: allFiles) {
+				if(pageInfo.get(e)[1].compareTo(bounds[0])==0 )
+				options.add(e);					
 
+			}
+		}
+if(t.getKeyValue().compareTo(bounds[bounds.length-1])>=0) {
+	for(String e: allFiles) {
+		if(pageInfo.get(e)[2].compareTo(bounds[0])==0)
+		options.add(e);					
 
-		ArrayList<String> options = findPages(t);
+	}
+		}
+		
+		for(int l=0;l<bounds.length-1;l++) {
+			
+			if(bounds[l].compareTo(t.getKeyValue()) <=0 && bounds[l+1].compareTo(t.getKeyValue()) >=0) {
+				if(l%2==0) { //in a file's limits
+					for(String e: allFiles) {
+						if(pageInfo.get(e)[1].compareTo(bounds[l])==0 || pageInfo.get(e)[2].compareTo(bounds[l+1])==0)
+						options.add(e);					
+
+					}
+				}else {
+					for(String e: allFiles) {
+						if(pageInfo.get(e)[1].compareTo(bounds[l+1])==0 || pageInfo.get(e)[2].compareTo(bounds[l])==0)
+						options.add(e);					
+
+					}
+				}
+				
+				
+			}
+		}
+		
+		
+//}
+//		for(int m=0;m<allFiles.length;m++)
+//		{
+//			if(t.getKeyValue().compareTo(pageInfo.get(allFiles[m])[1])>=0) {
+//				options.add(allFiles[m]);
+//			}
+//		}
+//options =removeDuplicates(options);
+//options= sortPages(options);
+
+//		ArrayList<String> 
+//		options = findPage(t);
+//		options =removeDuplicates(options);
+//		options= sortPages(options);
+
 		if (options.size() == 0 ) {
 System.out.println("options are empty" + options);
 			if (pageInfo.isEmpty()) {
@@ -297,7 +385,7 @@ System.out.println("options are empty" + options);
 				System.out.println("table has no pages");
 
 			} else {
-				if (t.getKeyValue().compareTo(allMin[0]) < 0) // smaller than smallest key
+				if (t.getKeyValue().compareTo(allMin[0]) <= 0) // smaller than smallest key
 				{
 					System.out.println("small 1" + options);
 
@@ -313,7 +401,7 @@ System.out.println("options are empty" + options);
 				} else // larger than largest key
 				{					System.out.println("big 0" + options);
 
-					if (t.getKeyValue().compareTo(allMax[allMax.length - 1]) > 0) {
+					if (t.getKeyValue().compareTo(allMax[allMax.length - 1]) >= 0) {
 						System.out.println("big 1" + options);
 
 						for (int j = 0; j < allFiles.length; j++) {
@@ -336,6 +424,8 @@ System.out.println("options are empty" + options);
 	}
 
 	public void insertHelper(Tuple t, ArrayList<String> pages) {
+		System.out.println("options for id : " +t.getKeyValue() + "are  "+pages);
+		
 		boolean found = false;
 		for (int i = 0; i < pages.size(); i++) {
 			if (!isPageFull(pages.get(i))) {
@@ -400,7 +490,7 @@ System.out.println("options are empty" + options);
 //					updatenoOfRows(next);
 					updatePageInfo(next);
 					Write(next);
-					System.out.println("RECURSIVE!!!!!!!!!!!");
+					System.out.println("RECURSIVE!!!!!!!!!!!" + temp.getKeyValue());
 					insert(temp2);
 				}
 
@@ -419,33 +509,39 @@ System.out.println("options are empty" + options);
 	}
 
 	public void insertPage(Tuple t) {
-
+System.out.println("inserting......");
 		if (this.page.size() > 0) {
 			Iterator it = this.page.iterator();
 			int i = 0;
 			boolean inserted = false;
-			while (it.hasNext() && inserted == true) {
+			while (it.hasNext() && inserted == false) {
 				Tuple tmp = (Tuple) it.next();
 				i++;
-				if (tmp.compareTo(t) < 0) {
-					this.page.insertElementAt(t, i + 1);
+				System.out.println(i + "   comp:" +t.compareTo(tmp));
+
+				if (t.compareTo(tmp) <= 0) {
+					this.page.insertElementAt(t, i-1);
 					inserted = true;
+					System.out.println("   found:" +inserted);
+
 					
 //				 this.rows.add(t);
 
 				}
-				i++;
+//				i++;
 			}
 			if (!inserted) {
 				page.add(t);
+				System.out.println("   found:" +inserted);
+
 			}
 		} else {
 //		 this.rows.insertElementAt(t, 0);
 			this.page.add(t);
 
 		}
-	}
 
+	}
 	public void delete(Tuple t) throws DBAppException {
 		page.clear();
 		
