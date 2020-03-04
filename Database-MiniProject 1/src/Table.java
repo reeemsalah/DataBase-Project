@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.text.ParseException;
@@ -51,14 +52,16 @@ public class Table implements Serializable {
 		this.clusteredCoulmns = clustered;
 		this.indexedCoulmns = indexed;
 		this.clusteredKey = clusteredKey;
-		Table.maxRows = maxRows;
 		String firstFile = addPage();
 		Comparable [] info = new Comparable[3];
 		info[0]=0;
 		info[1]=-1;
 		info[2]=-1;
 		pageInfo.put(firstFile, info);	
-		
+		 Properties prop = new Properties();
+
+			Table.maxRows = Integer.parseInt(prop.getProperty("MaximumRowsCountinPage"));
+
 	}
 
 	// to find the pages
