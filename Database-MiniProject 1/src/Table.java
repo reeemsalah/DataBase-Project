@@ -260,6 +260,7 @@ System.out.println("pagecount " + numOfPages);
 
 
 	public void insert(Tuple t) {
+		System.out.print("insert ely f table");
 		if (page!=null)
 		page.clear();
 		try {
@@ -661,34 +662,100 @@ System.out.println("inserting......");
 		return colInfo;
 	}
 
-	
 	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
-		ArrayList<String> pages = findPages(t);
-		Hashtable<String, String> contents = readTableMetadata();
 		System.out.println("I am here method");
-		for (String fileName : pages) {
-			Read(fileName);
-			System.out.println("I am here for loop 1");
+    //page.clear();
+		
+		Hashtable <String , String > temp=readTableMetadata(); 
+		
+		for(String file :pageInfo.keySet())
+		{
+			page.clear();
+			Read(file);
+			
 			for (Tuple t1 : page) {
-				//TODO fix this error
 				System.out.println("I am here for loop 2");
-				String coltype = contents.get(t1.getKey());
+				String coltype = temp.get(t1.getKey());
 				
-				if (("class "+coltype).equals(t.getClass().toString())) {
-				System.out.println("I am here if condition for col type");
+				if(coltype.equals("java.lang.Integer")) {
+					System.out.println("integer for sure");
+					int value=Integer.parseInt(t.getKey());
+					System.out.println(value);
+					System.out.println(t1.getKeyValue());
+					if(value==(int)t1.getKeyValue()) {
+						System.out.println("OMG THEY ARE EQUAL!");
+						//for (String key : t.getAttributes().keySet()) {
+							//System.out.println("lets hope it enters the for loop");
+						for (String key : t.getAttributes().keySet()) {
+							t1.edit(key, t.getValueOfColumn(key));
+						Date currentdate = new Date();
+
+						t1.edit("TouchDate", currentdate);
+						System.out.println(t1);
+						
+						}
+					}System.out.println("not equal go ckeck next tuple!");
+					
+					
+				}
+				else if (coltype.equals("java.lang.Double")) {
+					double value=Double.parseDouble(t.getKey());
+					if(value==(double)t1.getKeyValue()) {
+						System.out.println("OMG THEY ARE EQUAL!");
+						for (String key : t.getAttributes().keySet()) {
+							t1.edit(key, t.getValueOfColumn(key));
+						Date currentdate = new Date();
+
+						t1.edit("TouchDate", currentdate);
+				}
+			}
+					
+					System.out.print("not equal go check next tuple ");
+		}
+				else if(coltype.contentEquals("java.util.Date")) {
+					Date value= new Date((String) t.getKeyValue());
+					if(value==(Date)t1.getKeyValue()) {
+					System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
 					Date currentdate = new Date();
 
 					t1.edit("TouchDate", currentdate);
 				}
-
+				}
+					System.out.print("not equal go check next tuple ");
+				}
 				
+				else if(coltype.contentEquals("java.awt.Polygon")) {
+					Polygon value= (Polygon)t.getKeyValue();
+					if(value==(Polygon)t1.getKeyValue()) {
+					System.out.println("OMG THEY ARE EQUAL!");
+					for (String key : t.getAttributes().keySet()) {
+						t1.edit(key, t.getValueOfColumn(key));
+					Date currentdate = new Date();
+
+					t1.edit("TouchDate", currentdate);
+				}
+				}
+					System.out.print("not equal go check next tuple ");
+				}
+				else {
+					String value=(String)t.getKeyValue();
+					if(value.equals(t1.getKeyValue())) {
+				
+					System.out.println("OMG THEY ARE EQUAL!");
+					for (String key : t.getAttributes().keySet()) {
+						t1.edit(key, t.getValueOfColumn(key));
+					Date currentdate = new Date();
+
+					t1.edit("TouchDate", currentdate);
+				}
+					}
+					System.out.print("not equal go check next tuple ");
+			}
+			}
 			}
 		}
-
-	}
-	}
 
 	// updates the min key of the page in the page vector
 	/**

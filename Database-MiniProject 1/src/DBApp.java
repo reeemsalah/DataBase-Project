@@ -28,7 +28,7 @@ public class DBApp {
 	public void createTable(String strTableName, String strClusteringKeyColumn,
 			Hashtable<String, String> htblColNameType) throws DBAppException {
 		boolean flag = false;
-		// System.out.println("here1");
+		//System.out.println("entered create table");
 		if (tables.size() != 0) {
 			Object[] tmp = tables.keySet().toArray();
 			String[] tableNames = new String[tmp.length];
@@ -61,6 +61,7 @@ public class DBApp {
 
 			ArrayList<Boolean> clustered = new ArrayList<Boolean>();
 			for (int i = 0; i < columnNames.size(); i++) {
+				
 				if (columnNames.get(i).equals(strClusteringKeyColumn)) {
 					clustered.add(true);
 				} else {
@@ -71,15 +72,16 @@ public class DBApp {
 			ArrayList<Boolean> indexed = new ArrayList<Boolean>();
 			for (int i = 0; i < clustered.size(); i++) {
 				indexed.add(false);
+				
 			}
 			indexed.add(false);
-
+			
 			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn, 2);
 			// fix maxRows
-			// System.out.println("here4");
+			System.out.println("lets see");
 			tables.put(strTableName, t);
 			insertIntoMetaData(t, true);
-
+			
 		}
 
 	}
@@ -88,7 +90,7 @@ public class DBApp {
 		boolean flag = false;
 
 		java.util.Date date = new java.util.Date();
-//		System.out.println(date);
+System.out.println("entered insert into tablemdbapp");
 		htblColNameValue.put("TouchDate", date);
 
 		Object[] tableNamesObj = (tables.keySet().toArray());
@@ -121,7 +123,7 @@ public class DBApp {
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException {
-
+System.out.println("i entered update table el f dbapp");
 		boolean flag = false;
 		Object[] tableNamesObj = (tables.keySet().toArray());
 		String[] tableNames = new String[tableNamesObj.length];
