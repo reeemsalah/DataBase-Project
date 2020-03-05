@@ -571,7 +571,7 @@ System.out.println("inserting......");
 	 * @param t        tuple to be deleted from fileName
 	 */
 	public void deleteFromPage(String fileName, Tuple t) {
-		page.clear();
+		//page.clear();
 		Read(fileName);
 		int i = 0;
 		for (Tuple t1 : page) {
@@ -590,7 +590,7 @@ System.out.println("inserting......");
 
 		}
 		Write(fileName);
-		page.clear();
+		//page.clear();
 	}
 
 	public String returnTableName() {
@@ -662,7 +662,7 @@ System.out.println("inserting......");
 	}
 
 	public void updateTable(String strClusteringKey, Tuple t) throws DBAppException {
-		System.out.println("I am here method");
+		//System.out.println("I am here method");
     //page.clear();
 		
 		Hashtable <String , String > temp=readTableMetadata(); 
@@ -673,16 +673,16 @@ System.out.println("inserting......");
 			Read(file);
 			
 			for (Tuple t1 : page) {
-				System.out.println("I am here for loop 2");
+				//System.out.println("I am here for loop 2");
 				String coltype = temp.get(t1.getKey());
 				
 				if(coltype.equals("java.lang.Integer")) {
-					System.out.println("integer for sure");
+					//System.out.println("integer for sure");
 					int value=Integer.parseInt(strClusteringKey);
-					System.out.println(value);
-					System.out.println(t1.getKeyValue());
+					//System.out.println(value);
+					//System.out.println(t1.getKeyValue());
 					if(value==(int)t1.getKeyValue()) {
-						System.out.println("OMG THEY ARE EQUAL!");
+						//System.out.println("OMG THEY ARE EQUAL!");
 						//for (String key : t.getAttributes().keySet()) {
 							//System.out.println("lets hope it enters the for loop");
 						for (String key : t.getAttributes().keySet()) {
@@ -690,17 +690,17 @@ System.out.println("inserting......");
 						Date currentdate = new Date();
 
 						t1.edit("TouchDate", currentdate);
-						System.out.println(t1);
+						//System.out.println(t1);
 						
 						}
-					}System.out.println("not equal go ckeck next tuple!");
+					}//System.out.println("not equal go ckeck next tuple!");
 					
 					
 				}
 				else if (coltype.equals("java.lang.Double")) {
 					double value=Double.parseDouble(strClusteringKey);
 					if(value==(double)t1.getKeyValue()) {
-						System.out.println("OMG THEY ARE EQUAL!");
+						//System.out.println("OMG THEY ARE EQUAL!");
 						for (String key : t.getAttributes().keySet()) {
 							t1.edit(key, t.getValueOfColumn(key));
 						Date currentdate = new Date();
@@ -714,7 +714,7 @@ System.out.println("inserting......");
 				else if(coltype.contentEquals("java.util.Date")) {
 					Date value= new Date((String) strClusteringKey);
 					if(value==(Date)t1.getKeyValue()) {
-					System.out.println("OMG THEY ARE EQUAL!");
+					//System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
 					Date currentdate = new Date();
@@ -722,13 +722,13 @@ System.out.println("inserting......");
 					t1.edit("TouchDate", currentdate);
 				}
 				}
-					System.out.print("not equal go check next tuple ");
+					//System.out.print("not equal go check next tuple ");
 				}
 				
 				else if(coltype.contentEquals("java.awt.Polygon")) {
 					Region value= Region.StringToRegion(strClusteringKey);
 					if(value.equals((Region)t1.getKeyValue())) {
-					System.out.println("OMG THEY ARE EQUAL!");
+					//System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
 					Date currentdate = new Date();
@@ -736,13 +736,13 @@ System.out.println("inserting......");
 					t1.edit("TouchDate", currentdate);
 				}
 				}
-					System.out.print("not equal go check next tuple ");
+					//System.out.print("not equal go check next tuple ");
 				}
 				else {
 					String value=(String)t.getKeyValue();
 					if(value.equals(t1.getKeyValue())) {
 				
-					System.out.println("OMG THEY ARE EQUAL!");
+					//System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
 					Date currentdate = new Date();
@@ -750,7 +750,7 @@ System.out.println("inserting......");
 					t1.edit("TouchDate", currentdate);
 				}
 					}
-					System.out.print("not equal go check next tuple ");
+					//System.out.print("not equal go check next tuple ");
 			}
 			}
 			}

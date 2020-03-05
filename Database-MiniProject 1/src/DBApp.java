@@ -89,7 +89,7 @@ public class DBApp {
 			}
 			indexed.add(false);
 			
-			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn, 2);
+			Table t = new Table(strTableName, columnNames, columnTypes, clustered, indexed, strClusteringKeyColumn,maxRows);
 			// fix maxRows
 			System.out.println("lets see");
 			tables.put(strTableName, t);
@@ -137,7 +137,7 @@ System.out.println("entered insert into tablemdbapp");
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException {
-		System.out.println("i entered update table el f dbapp");
+		//System.out.println("i entered update table el f dbapp");
 		boolean flag = false;
 		Object[] tableNamesObj = (tables.keySet().toArray());
 		String[] tableNames = new String[tableNamesObj.length];
@@ -155,7 +155,7 @@ System.out.println("entered insert into tablemdbapp");
 		if (!flag) {
 			throw new DBAppException("This table doens't exist");
 		} else {
-			System.out.println("AY 7AGA");
+			//System.out.println("AY 7AGA");
 			Hashtable<String, Comparable> tempHash = new Hashtable<String, Comparable>();
 			Set<String> keys = htblColNameValue.keySet();
 			for (String key : keys) {
