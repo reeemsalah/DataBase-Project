@@ -59,8 +59,7 @@ public class Table implements Serializable {
 		info[2]=-1;
 		pageInfo.put(firstFile, info);	
 		 Properties prop = new Properties();
-
-			Table.maxRows = Integer.parseInt(prop.getProperty("MaximumRowsCountinPage"));
+		 Table.maxRows=maxRows;
 
 	}
 
@@ -72,7 +71,7 @@ public class Table implements Serializable {
 	 * @return the new file for the newly created page
 	 */
 	public String addPage() {
-		String filename = tableName + "_" + (++numOfPages);
+		String filename = "data/"+tableName + "_" + (++numOfPages);
 System.out.println("pagecount " + numOfPages);
 		File file = new File(filename + ".ser");
 		try {
@@ -631,7 +630,7 @@ System.out.println("inserting......");
 		try   
 		{  
 		//parsing a CSV file into BufferedReader class constructor  
-		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));  
+		BufferedReader br = new BufferedReader(new FileReader("data/metadata.csv"));  
 		while ((line = br.readLine()) != null)   //returns a Boolean value  
 		{  
 		String[] entry = line.split(splitBy);    // use comma as separator  

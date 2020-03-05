@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,9 +21,21 @@ public class DBApp {
 	}
 
 	public void init() {
-		Properties DBApp = new Properties();
-		DBApp.put("MaximumRowsCountinPage", maxRows);
-		DBApp.put("NodeSize", nodeSize);
+		try {
+		File myFile=new File("data/metadata.csv");
+		myFile.createNewFile();	
+		FileReader reader=new FileReader("config/DBApp.properties");  
+	
+	    Properties p=new Properties();  
+	    p.load(reader);  
+	      
+	    maxRows=Integer.parseInt(p.getProperty("MaximumRowsCountinPage"));
+	    nodeSize=Integer.parseInt(p.getProperty("NodeSize"));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void createTable(String strTableName, String strClusteringKeyColumn,
@@ -197,9 +210,9 @@ System.out.println("i entered update table el f dbapp");
 		ArrayList<Boolean> clusteredColumns = t.getClusteredCoulmns();
 		ArrayList<Boolean> indexedColumns = t.getIndexedCoulmns();
 		String toBeInserted = "Table Name, Column Name, Column Type, ClusteringKey, Indexed";
-		File file = new File("metadata.csv");
+		File file = new File("data/metadata.csv");
 		try {
-			FileWriter f = new FileWriter("metadata.csv", append);
+			FileWriter f = new FileWriter("data/metadata.csv", append);
 			BufferedWriter bw = new BufferedWriter(f);
 			bw.write(toBeInserted);
 			bw.write("\n");
@@ -235,6 +248,7 @@ System.out.println("i entered update table el f dbapp");
 		htblColNameType.put("name", "java.lang.String");
 		htblColNameType.put("gpa", "java.lang.double");
 		try {
+			dbApp.init();
 			dbApp.createTable(strTableName, "id", htblColNameType);
 			Hashtable htblColNameValue = new Hashtable();
 			htblColNameValue.put("id", new Integer(1));
@@ -250,7 +264,9 @@ System.out.println("i entered update table el f dbapp");
 			htblColNameValue.put("name", new String("Ahmed"));
 			dbApp.updateTable(strTableName, "1", htblColNameValue);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
+			
+			
 		}
 
 	}
