@@ -678,7 +678,7 @@ System.out.println("inserting......");
 				
 				if(coltype.equals("java.lang.Integer")) {
 					System.out.println("integer for sure");
-					int value=Integer.parseInt(t.getKey());
+					int value=Integer.parseInt(strClusteringKey);
 					System.out.println(value);
 					System.out.println(t1.getKeyValue());
 					if(value==(int)t1.getKeyValue()) {
@@ -698,7 +698,7 @@ System.out.println("inserting......");
 					
 				}
 				else if (coltype.equals("java.lang.Double")) {
-					double value=Double.parseDouble(t.getKey());
+					double value=Double.parseDouble(strClusteringKey);
 					if(value==(double)t1.getKeyValue()) {
 						System.out.println("OMG THEY ARE EQUAL!");
 						for (String key : t.getAttributes().keySet()) {
@@ -712,7 +712,7 @@ System.out.println("inserting......");
 					System.out.print("not equal go check next tuple ");
 		}
 				else if(coltype.contentEquals("java.util.Date")) {
-					Date value= new Date((String) t.getKeyValue());
+					Date value= new Date((String) strClusteringKey);
 					if(value==(Date)t1.getKeyValue()) {
 					System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
@@ -726,8 +726,8 @@ System.out.println("inserting......");
 				}
 				
 				else if(coltype.contentEquals("java.awt.Polygon")) {
-					Polygon value= (Polygon)t.getKeyValue();
-					if(value==(Polygon)t1.getKeyValue()) {
+					Region value= Region.StringToRegion(strClusteringKey);
+					if(value.equals((Region)t1.getKeyValue())) {
 					System.out.println("OMG THEY ARE EQUAL!");
 					for (String key : t.getAttributes().keySet()) {
 						t1.edit(key, t.getValueOfColumn(key));
