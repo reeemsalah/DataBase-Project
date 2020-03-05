@@ -93,6 +93,7 @@ public class DBApp {
 			// fix maxRows
 			System.out.println("lets see");
 			tables.put(strTableName, t);
+			System.out.println(maxRows);
 			insertIntoMetaData(t, true);
 			
 		}
